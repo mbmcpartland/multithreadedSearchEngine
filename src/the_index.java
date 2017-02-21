@@ -18,12 +18,19 @@ import java.util.TreeMap;
 import javax.swing.text.html.HTMLDocument.Iterator;
 
 public class the_index {
+	
 	private static Map<String, ArrayList<Map<String, ArrayList<Integer>>>> index;
 	
 	public the_index() {
 		this.index = new TreeMap();
 	}
-	
+//-----------------------------------------------------------------------------------------------//
+// Method: add
+// Description: This method is used to either a) add a new word to my index,
+//				b) if the word already exists, then add a new file mapping,
+//				or c) if the file mapping already exists, then add a new
+//				position to the index for the corresponding word and file.
+//-----------------------------------------------------------------------------------------------//	
 	public void add(String word, int position, String path) {
 		if(!(this.index.containsKey(word))) {
 			ArrayList<Map<String, ArrayList<Integer>>> the_list = new ArrayList();
@@ -58,7 +65,12 @@ public class the_index {
 			}
 		}
 	}
-	
+//-----------------------------------------------------------------------------------------------//
+// Method: clean_index
+// Description: This method is used to remove duplicates from my
+//				index structure, while preserving the original
+//				order in which the files were read.
+//-----------------------------------------------------------------------------------------------//	
 	public static void clean_index() {
 		Set<Map<String, ArrayList<Integer>>> the_set = new LinkedHashSet();
 		for(Map.Entry<String, ArrayList<Map<String, ArrayList<Integer>>>> entry : index.entrySet()) {
@@ -69,25 +81,14 @@ public class the_index {
 			the_set.clear();
 		}
 	}
-	
-	public static String print_index() {
-		String to_print = "";
-		for(Map.Entry<String, ArrayList<Map<String, ArrayList<Integer>>>> entry : index.entrySet()) {
-			String word = entry.getKey();
-			to_print += "\"" + word + "\": \n";
-			ArrayList<Map<String, ArrayList<Integer>>> the_list = entry.getValue();
-			for(Map<String, ArrayList<Integer>> map : the_list) {
-				for(Map.Entry<String, ArrayList<Integer>> map_entry : map.entrySet()) {
-					to_print += "   " + map_entry.getKey() + ": \n";
-					for(Integer pos : map_entry.getValue()) {
-						to_print += "            " + pos + "\n";
-					}
-				}
-			}
-		}
-		return to_print;
-	}
-	
+
+//-----------------------------------------------------------------------------------------------//
+// Method: writeJSON	
+// Description: This complex method makes use of multiple iterators
+//				so that I can iterate through my complex index
+//				structure.  I had to use iterators so that I know
+//				when to write a comma.
+//-----------------------------------------------------------------------------------------------//	
 	public static void writeJSON(Path path) throws IOException {
 		try(BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			writer.write("{");
@@ -144,7 +145,11 @@ public class the_index {
 			writer.flush();
 		}
 	}
-	
+//-----------------------------------------------------------------------------------------------//
+// Method: indent	
+// Description: This method was provided by Sophie and it just
+//				returns a String of indents (or just one indent).
+//-----------------------------------------------------------------------------------------------//	
 	public static String indent(int times) {
 		char[] tabs = new char[times];
 		Arrays.fill(tabs, '\t');
