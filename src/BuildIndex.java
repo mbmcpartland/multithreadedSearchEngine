@@ -1,4 +1,4 @@
-public class build_index {
+public class BuildIndex {
 
 //-----------------------------------------------------------------------------------------------//
 // Method: buildIndex	
@@ -8,7 +8,7 @@ public class build_index {
 //				enhanced for-loop, along with a counter, I call the add
 //				function for my index.
 //-----------------------------------------------------------------------------------------------//
-	public static void buildIndex(String path, the_index index, String[] words) {
+	public static void buildIndex(String path, WordIndex index, String[] words) {
 		int m = 1;
 		for(String word : words) {
 			index.add(word, m, path);

@@ -18,24 +18,38 @@ import java.nio.file.Paths;
 
 public class Driver { 
 
+//-----------------------------------------------------------------------------------------------//
+// Method: main	
+// Description: This method takes in a String representation of the path of
+//				In this Driver class, my main method first calls handleArgs
+//				and checkArgs, which are two methods in my Helper class. To
+//				read more about handleArgs and checkArgs, you can go to my
+//				Helper class to read my notes about what they both do. After
+//				doing my necessary checks in the arguments passed in through
+//				the command line, I call my fileExists method from my Helper
+//				class.  If the input file exists, then I call my most important
+//				function for this whole project, which is my readAndBuild
+//				method in my Helper class.
+//-----------------------------------------------------------------------------------------------//
+	
 	public static void main(String[] args) throws IOException {
 		
-		String[] input_output = helper.handle_args(args);
-		if(input_output[0] == null && input_output[1] == null) {
+		String[] inputOutput = Helper.handleArgs(args);
+		if(inputOutput[0] == null && inputOutput[1] == null) {
 			return;
 		}
 		
-		int[] three_things = helper.check_args(args);
-		if(three_things[2] == 6) {
+		int[] threeThings = Helper.checkArgs(args);
+		if(threeThings[2] == 6) {
 			return;
 		}
 		
-		Path input_path = Paths.get(input_output[0]);
-		if(helper.file_exists(input_path) == true) {
+		Path inputPath = Paths.get(inputOutput[0]);
+		if(Helper.fileExists(inputPath) == true) {
 			return;
 		}
 		
-		helper.read_and_build(input_output, three_things[1], input_path);
+		Helper.readAndBuild(inputOutput, threeThings[1], inputPath);
 	
 	}
 }

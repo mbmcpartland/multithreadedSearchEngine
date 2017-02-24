@@ -9,107 +9,107 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-public class helper {
+public class Helper {
 	
 //-----------------------------------------------------------------------------------------------//
-// Method: handle_args	
+// Method: handleArgs	
 // Description: This method is used to handle the command-line arguments.
-//				It returns the "input_output" array, where input_output[0]
-//				corresponds to the input file, and input_output[1] corresponds
+//				It returns the "inputOutput" array, where inputOutput[0]
+//				corresponds to the input file, and inputOutput[1] corresponds
 //				to the output file.
 //-----------------------------------------------------------------------------------------------//	
-	public static String[] handle_args(String[] args_arr) throws IOException {
-		String[] input_output = new String[2];
-		input_output[0] = null;
-		input_output[1] = null;
-		Path output_directory = null;
-		if(args_arr.length == 0) {
-			return input_output;
+	public static String[] handleArgs(String[] argsArray) throws IOException {
+		String[] inputOutput = new String[2];
+		inputOutput[0] = null;
+		inputOutput[1] = null;
+		Path outputDir = null;
+		if(argsArray.length == 0) {
+			return inputOutput;
 		}
-		for(int i = 0 ; i < args_arr.length ; i++) {
-			if(args_arr[i].equals("-path") && (i + 1) != args_arr.length) {
-				input_output[0] = args_arr[i + 1];
+		for(int i = 0 ; i < argsArray.length ; i++) {
+			if(argsArray[i].equals("-path") && (i + 1) != argsArray.length) {
+				inputOutput[0] = argsArray[i + 1];
 			}
-			if(args_arr[i].equals("-index")) {
-				if(!((i + 1) >= args_arr.length)) {
-					if(!(args_arr[i + 1].equals("-path"))) {
-						output_directory = Paths.get(args_arr[i + 1]);
-						input_output[1] = output_directory.toString();
+			if(argsArray[i].equals("-index")) {
+				if(!((i + 1) >= argsArray.length)) {
+					if(!(argsArray[i + 1].equals("-path"))) {
+						outputDir = Paths.get(argsArray[i + 1]);
+						inputOutput[1] = outputDir.toString();
 					} else {
-						output_directory = Paths.get("index.json");
-						input_output[1] = output_directory.toString();
-						try(BufferedWriter writer = Files.newBufferedWriter(output_directory, StandardCharsets.UTF_8)) {
+						outputDir = Paths.get("index.json");
+						inputOutput[1] = outputDir.toString();
+						try(BufferedWriter writer = Files.newBufferedWriter(outputDir, StandardCharsets.UTF_8)) {
 							//do nothing
 						}
 					}
 				} else {
-					output_directory = Paths.get("index.json");
-					input_output[1] = output_directory.toString();
-					try(BufferedWriter writer = Files.newBufferedWriter(output_directory, StandardCharsets.UTF_8)) {
+					outputDir = Paths.get("index.json");
+					inputOutput[1] = outputDir.toString();
+					try(BufferedWriter writer = Files.newBufferedWriter(outputDir, StandardCharsets.UTF_8)) {
 						//do nothing
 					}
 				}
 			}
 		}
-		return input_output;
+		return inputOutput;
 	}
 //-----------------------------------------------------------------------------------------------//
-// Method: check_args	
+// Method: checkArgs	
 // Description: This method is used to do error checking on the command-
 //				line arguments.  If the -path flag is not found, then
-//				the "found" variable stays set to 0, and three_things[2]
+//				the "found" variable stays set to 0, and threeThings[2]
 //				is set to 6, meaning that main should return.  The variable,
-//				no_output, is used to see if I need to write output. So,
-//				three_things[0] corresponds to the "found" variable,
-//				three_things[1] corresponds to the "no_output" variable,
-//				and three_things[2] is only set to 6 if main must return
+//				noOutput, is used to see if I need to write output. So,
+//				threeThings[0] corresponds to the "found" variable,
+//				threeThings[1] corresponds to the "noOutput" variable,
+//				and threeThings[2] is only set to 6 if main must return
 //				after this method is called.
 //-----------------------------------------------------------------------------------------------//
-	public static int[] check_args(String[] args_arr) {
+	public static int[] checkArgs(String[] argsArray) {
 		int found = 0;
-		int no_output = 0;
-		int[] three_things = new int[3];
+		int noOutput = 0;
+		int[] threeThings = new int[3];
 			
-		for(int m = 0 ; m < args_arr.length ; m++) {
-			if(args_arr[m].equals("-path")) {
+		for(int m = 0 ; m < argsArray.length ; m++) {
+			if(argsArray[m].equals("-path")) {
 				found = 1;
-				three_things[0] = found;
-				if((m + 1) == args_arr.length) {
-					three_things[2] = 6;
+				threeThings[0] = found;
+				if((m + 1) == argsArray.length) {
+					threeThings[2] = 6;
 				} else {
-					if(args_arr[m + 1].equals("-index")) {
-						three_things[2] = 6;
+					if(argsArray[m + 1].equals("-index")) {
+						threeThings[2] = 6;
 					}
 				}
 			}
-			if(args_arr[m].equals("-index")) {
-				no_output = 1;
-				three_things[1] = no_output;
+			if(argsArray[m].equals("-index")) {
+				noOutput = 1;
+				threeThings[1] = noOutput;
 			}
 		}
 		if(found == 0) {
-			three_things[2] = 6;
+			threeThings[2] = 6;
 		}
-		return three_things;
+		return threeThings;
 	}
 //-----------------------------------------------------------------------------------------------//
-// Method: file_exists	
+// Method: fileExists	
 // Description: This method is called to make sure that the user did not
 //				provide a bogus path for the file that needs to be read.
 //-----------------------------------------------------------------------------------------------//
-	public static boolean file_exists(Path input_path) {
-		boolean path_notexists = Files.notExists(input_path, new LinkOption[]{LinkOption.NOFOLLOW_LINKS});
-		if(path_notexists == true) {
+	public static boolean fileExists(Path inputPath) {
+		boolean pathNotExists = Files.notExists(inputPath, new LinkOption[]{LinkOption.NOFOLLOW_LINKS});
+		if(pathNotExists == true) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 //-----------------------------------------------------------------------------------------------//
-// Method: read_and_build	
-// Description: This method takes in the input_output array, which contains
+// Method: readAndBuild	
+// Description: This method takes in the inputOutput array, which contains
 //				String representations of the input and output paths. It
-//				also takes in the no_output int, which is used to decide
+//				also takes in the noOutput int, which is used to decide
 //				whether or not the JSON file will be written to. The last
 //				parameter is simply the Path object, input_path.  First,
 //				I create a new index object, and then I check if the input
@@ -125,11 +125,11 @@ public class helper {
 //				this method jumps to the else statement. I then call my
 //				writeJSON method to write the final JSON file.
 //-----------------------------------------------------------------------------------------------//
-	public static void read_and_build(String[] input_output, int no_output, Path input_path) throws IOException {
-		the_index index = new the_index();
-		if(!(input_output[0].toLowerCase().endsWith(".html") || input_output[0].toLowerCase().endsWith(".htm"))) {
+	public static void readAndBuild(String[] inputOutput, int noOutput, Path input_path) throws IOException {
+		WordIndex index = new WordIndex();
+		if(!(inputOutput[0].toLowerCase().endsWith(".html") || inputOutput[0].toLowerCase().endsWith(".htm"))) {
 			ArrayList<String> filenames = new ArrayList();
-			get_file_names(filenames, input_path);
+			getFileNames(filenames, input_path);
 			ArrayList<Path> files = new ArrayList();
 			for(String the_files : filenames) {
 				if(the_files.toLowerCase().endsWith(".html") || the_files.toLowerCase().endsWith(".htm")) {
@@ -145,7 +145,7 @@ public class helper {
 					}
 					String no_html = HTMLCleaner.stripHTML(html.toString());
 					String[] the_words = WordParser.parseWords(no_html);
-					build_index.buildIndex(path.toString(), index, the_words);
+					BuildIndex.buildIndex(path.toString(), index, the_words);
 				}
 			}
 		} else {
@@ -157,28 +157,28 @@ public class helper {
 				}
 				String no_html = HTMLCleaner.stripHTML(html.toString());
 				String[] the_words = WordParser.parseWords(no_html);
-				build_index.buildIndex(input_path.toString(), index, the_words);
+				BuildIndex.buildIndex(input_path.toString(), index, the_words);
 			}
 		}
-		the_index.clean_index();
-		if(no_output == 1) {
-			Path output_directory = Paths.get(input_output[1]);
-			the_index.writeJSON(output_directory);
+		WordIndex.cleanIndex();
+		if(noOutput == 1) {
+			Path outputDir = Paths.get(inputOutput[1]);
+			WordIndex.writeJSON(outputDir);
 		}
 	}
 //-----------------------------------------------------------------------------------------------//
-// Method: get_file_names	
+// Method: getFileNames	
 // Description: This method is called if the input file provided does 
 //				not end with ".html" or ".htm", meaning that it is a 
 //				directory.  This method recursively traverses the
 //				directory and returns an ArrayList of the files that 
 //				need to be read.
 //-----------------------------------------------------------------------------------------------//
-	public static ArrayList<String> get_file_names(ArrayList<String> fileNames, Path directory) {
+	public static ArrayList<String> getFileNames(ArrayList<String> fileNames, Path directory) {
 		try(DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
 			for(Path path : stream) {
 				if(path.toFile().isDirectory()) {
-					get_file_names(fileNames, path);
+					getFileNames(fileNames, path);
 				} else {
 					fileNames.add(path.toString());
 				}

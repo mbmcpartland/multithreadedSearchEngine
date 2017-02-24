@@ -17,11 +17,11 @@ import java.util.TreeMap;
 
 import javax.swing.text.html.HTMLDocument.Iterator;
 
-public class the_index {
+public class WordIndex {
 	
 	private static Map<String, ArrayList<Map<String, ArrayList<Integer>>>> index;
 	
-	public the_index() {
+	public WordIndex() {
 		this.index = new TreeMap();
 	}
 //-----------------------------------------------------------------------------------------------//
@@ -33,35 +33,35 @@ public class the_index {
 //-----------------------------------------------------------------------------------------------//	
 	public void add(String word, int position, String path) {
 		if(!(this.index.containsKey(word))) {
-			ArrayList<Map<String, ArrayList<Integer>>> the_list = new ArrayList();
-			ArrayList<Integer> pos_list = new ArrayList();
-			pos_list.add(position);
-			LinkedHashMap<String, ArrayList<Integer>> the_map = new LinkedHashMap();
-			the_map.put(path, pos_list);
-			the_list.add(the_map);
-			this.index.put(word, the_list);
+			ArrayList<Map<String, ArrayList<Integer>>> theList = new ArrayList();
+			ArrayList<Integer> posList = new ArrayList();
+			posList.add(position);
+			LinkedHashMap<String, ArrayList<Integer>> theMap = new LinkedHashMap();
+			theMap.put(path, posList);
+			theList.add(theMap);
+			this.index.put(word, theList);
 		} else {
-			ArrayList<Map<String, ArrayList<Integer>>> the_list = this.index.get(word);
+			ArrayList<Map<String, ArrayList<Integer>>> theList = this.index.get(word);
 			int exists = 0;
-			for(Map<String, ArrayList<Integer>> map : the_list) {
+			for(Map<String, ArrayList<Integer>> map : theList) {
 				if(map.containsKey(path)) {
 					exists = 1;
-					ArrayList<Integer> the_pos_list = map.get(path);
-					the_pos_list.add(position);
-					map.put(path, the_pos_list);
-					int index = the_list.indexOf(map);
-					the_list.add(index, map);
-					this.index.put(word, the_list);
+					ArrayList<Integer> thePosList = map.get(path);
+					thePosList.add(position);
+					map.put(path, thePosList);
+					int index = theList.indexOf(map);
+					theList.add(index, map);
+					this.index.put(word, theList);
 					break;
 				}
 			}
 			if(exists == 0) {
-				Map<String, ArrayList<Integer>> new_map = new LinkedHashMap();
-				ArrayList<Integer> pos_list = new ArrayList();
-				pos_list.add(position);
-				new_map.put(path, pos_list);
-				the_list.add(new_map);
-				this.index.put(word, the_list);
+				Map<String, ArrayList<Integer>> newMap = new LinkedHashMap();
+				ArrayList<Integer> posList = new ArrayList();
+				posList.add(position);
+				newMap.put(path, posList);
+				theList.add(newMap);
+				this.index.put(word, theList);
 			}
 		}
 	}
@@ -71,14 +71,14 @@ public class the_index {
 //				index structure, while preserving the original
 //				order in which the files were read.
 //-----------------------------------------------------------------------------------------------//	
-	public static void clean_index() {
-		Set<Map<String, ArrayList<Integer>>> the_set = new LinkedHashSet();
+	public static void cleanIndex() {
+		Set<Map<String, ArrayList<Integer>>> theSet = new LinkedHashSet();
 		for(Map.Entry<String, ArrayList<Map<String, ArrayList<Integer>>>> entry : index.entrySet()) {
-			ArrayList<Map<String, ArrayList<Integer>>> the_list = entry.getValue();
-			the_set.addAll(the_list);
-			the_list.clear();
-			the_list.addAll(the_set);
-			the_set.clear();
+			ArrayList<Map<String, ArrayList<Integer>>> theList = entry.getValue();
+			theSet.addAll(theList);
+			theList.clear();
+			theList.addAll(theSet);
+			theSet.clear();
 		}
 	}
 
@@ -96,21 +96,21 @@ public class the_index {
 			Set entrySet1 = index.entrySet();
 			java.util.Iterator iterator = entrySet1.iterator();
 			while(iterator.hasNext()) {
-				Entry first_entry = (Entry) iterator.next();
-				String word = (String) first_entry.getKey();
+				Entry firstEntry = (Entry) iterator.next();
+				String word = (String) firstEntry.getKey();
 				writer.write(indent(1));
 				writer.write("\"" + word + "\": {");
 				writer.write(System.lineSeparator());
-				ArrayList<Map<String, ArrayList<Integer>>> the_list = (ArrayList<Map<String, ArrayList<Integer>>>) first_entry.getValue();
-				java.util.Iterator<Map<String, ArrayList<Integer>>> itr = the_list.iterator();
+				ArrayList<Map<String, ArrayList<Integer>>> theList = (ArrayList<Map<String, ArrayList<Integer>>>) firstEntry.getValue();
+				java.util.Iterator<Map<String, ArrayList<Integer>>> itr = theList.iterator();
 				while(itr.hasNext()) {
-					Map<String, ArrayList<Integer>> the_map = itr.next();
-					Set entrySet = the_map.entrySet();
+					Map<String, ArrayList<Integer>> theMap = itr.next();
+					Set entrySet = theMap.entrySet();
 					java.util.Iterator itr2 = entrySet.iterator();
 					while(itr2.hasNext()) {
-						Entry the_entry = (Entry) itr2.next();
-						Object file = the_entry.getKey();
-						ArrayList<Integer> value = (ArrayList<Integer>) the_entry.getValue();
+						Entry theEntry = (Entry) itr2.next();
+						Object file = theEntry.getKey();
+						ArrayList<Integer> value = (ArrayList<Integer>) theEntry.getValue();
 						writer.write(indent(2));
 						writer.write("\"" + file + "\": [");
 						writer.write(System.lineSeparator());
