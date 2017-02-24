@@ -18,6 +18,8 @@ public class Helper {
 //				corresponds to the input file, and inputOutput[1] corresponds
 //				to the output file.
 //-----------------------------------------------------------------------------------------------//	
+	
+	// TODO ArgumentMap
 	public static String[] handleArgs(String[] argsArray) throws IOException {
 		String[] inputOutput = new String[2];
 		inputOutput[0] = null;
@@ -38,6 +40,8 @@ public class Helper {
 					} else {
 						outputDir = Paths.get("index.json");
 						inputOutput[1] = outputDir.toString();
+						
+						// TODO Maybe take these out
 						try(BufferedWriter writer = Files.newBufferedWriter(outputDir, StandardCharsets.UTF_8)) {
 							//do nothing
 						}
@@ -45,6 +49,8 @@ public class Helper {
 				} else {
 					outputDir = Paths.get("index.json");
 					inputOutput[1] = outputDir.toString();
+					
+					// TODO Maybe take these out
 					try(BufferedWriter writer = Files.newBufferedWriter(outputDir, StandardCharsets.UTF_8)) {
 						//do nothing
 					}
@@ -105,6 +111,9 @@ public class Helper {
 			return false;
 		}
 	}
+	
+	// TODO Rename to some kind of "Builder" class that builders an InvertedIndex from HTML files
+	
 //-----------------------------------------------------------------------------------------------//
 // Method: readAndBuild	
 // Description: This method takes in the inputOutput array, which contains
@@ -128,6 +137,8 @@ public class Helper {
 	public static void readAndBuild(String[] inputOutput, int noOutput, Path input_path) throws IOException {
 		WordIndex index = new WordIndex();
 		if(!(inputOutput[0].toLowerCase().endsWith(".html") || inputOutput[0].toLowerCase().endsWith(".htm"))) {
+			// TODO ArrayList<String> filenames = new ArrayList<String>();
+			// TODO ArrayList<String> filenames = new ArrayList<>();
 			ArrayList<String> filenames = new ArrayList();
 			getFileNames(filenames, input_path);
 			ArrayList<Path> files = new ArrayList();
@@ -161,11 +172,32 @@ public class Helper {
 			}
 		}
 		WordIndex.cleanIndex();
+		
+		// TODO This should be a separate function elsewhere and not part of building
 		if(noOutput == 1) {
 			Path outputDir = Paths.get(inputOutput[1]);
 			WordIndex.writeJSON(outputDir);
 		}
 	}
+	
+	/* TODO
+	public static void parseHTMLFiles(ArrayList<Path> files, WordIndex index) {
+		
+	}
+	
+	public static void parseHTMLFile(Path file, WordIndex index) {
+		// put stringbuilder/bufferedreader code here
+	}
+	*/
+	
+	
+	// TODO Maybe move into a DirectoryTraverser, create lists of path objects instead
+	public static ArrayList<String> getHTMLFiles(Path directory) {
+		ArrayList<String> files = new ArrayList<>();
+		getFileNames(files, directory);
+		return files;
+	}
+	
 //-----------------------------------------------------------------------------------------------//
 // Method: getFileNames	
 // Description: This method is called if the input file provided does 
@@ -174,16 +206,18 @@ public class Helper {
 //				directory and returns an ArrayList of the files that 
 //				need to be read.
 //-----------------------------------------------------------------------------------------------//
-	public static ArrayList<String> getFileNames(ArrayList<String> fileNames, Path directory) {
+	public static ArrayList<String> getFileNames(ArrayList<String> fileNames, Path directory) { // TODO Make private?
 		try(DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
 			for(Path path : stream) {
 				if(path.toFile().isDirectory()) {
 					getFileNames(fileNames, path);
 				} else {
+					// TODO Only add HTML files at this point
 					fileNames.add(path.toString());
 				}
 			}
 		} catch(IOException e) {
+			// TODO Either output something friendly, or even better, throw this to Driver
 			e.printStackTrace();
 		}
 		return fileNames;
