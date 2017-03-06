@@ -16,6 +16,12 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+// TODO Always address your warnings
+
+// TODO You can avoid having import warnings by configuring Eclipse "Save Actions" to always "Organize Imports" on save.
+
+// TODO Add Javadoc comments to all classes and methods
+
 public class Driver { 
 
 //-----------------------------------------------------------------------------------------------//
@@ -32,6 +38,16 @@ public class Driver {
 //				method in my Helper class.
 //-----------------------------------------------------------------------------------------------//
 	
+	// TODO You can throw exceptions everywhere EXCEPT main
+	
+	// TODO Driver should have project-specific argument handling
+	// TODO All other classes must be generalized
+	
+	/**
+	 * TODO Add description here
+	 * @param args describe parameter here
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 		
 		String[] inputOutput = Helper.handleArgs(args);
@@ -50,6 +66,18 @@ public class Driver {
 		}
 		
 		Helper.readAndBuild(inputOutput, threeThings[1], inputPath);
-	
+		
+		/* TODO Try this
+		ArgumentMap map = new ArgumentMap(args);
+		WordIndex index = new WordIndex();
+		
+		if (map.hasFlag("-path")) {
+			trigger the directory traversal and reading of files here
+		}
+		
+		if (map.hasFlag("-index")) {
+			trigger writing your word index to file here
+		}
+		*/
 	}
 }

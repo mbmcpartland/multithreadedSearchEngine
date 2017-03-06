@@ -19,10 +19,13 @@ import javax.swing.text.html.HTMLDocument.Iterator;
 
 public class WordIndex {
 	
+	// TODO Avoid making members static, instead make this final
 	private static Map<String, ArrayList<Map<String, ArrayList<Integer>>>> index;
 	
+	// TODO private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> index; 
+	
 	public WordIndex() {
-		this.index = new TreeMap();
+		this.index = new TreeMap(); // TODO TreeMap<>();
 	}
 //-----------------------------------------------------------------------------------------------//
 // Method: add
@@ -32,6 +35,21 @@ public class WordIndex {
 //				position to the index for the corresponding word and file.
 //-----------------------------------------------------------------------------------------------//	
 	public void add(String word, int position, String path) {
+		/* TODO Try this
+		if (word exists in the  map) {
+			if (file exists in the inner map) {
+				add the new position
+			}
+			else {
+				intialize the inner set
+			}
+		}
+		else {
+			initialize the inner map and the inner set
+		}
+		*/
+		
+		
 		if(!(this.index.containsKey(word))) {
 			ArrayList<Map<String, ArrayList<Integer>>> theList = new ArrayList();
 			ArrayList<Integer> posList = new ArrayList();
@@ -65,6 +83,7 @@ public class WordIndex {
 			}
 		}
 	}
+	
 //-----------------------------------------------------------------------------------------------//
 // Method: clean_index
 // Description: This method is used to remove duplicates from my
@@ -82,6 +101,16 @@ public class WordIndex {
 		}
 	}
 
+	// TODO Keep this method here... but to make your code more general add back JSONWRiter with this method:
+//	public static void asDoubleNestedObject(TreeMap<String, TreeMap<String, TreeSet<Integer>>> index, Path path) {
+//		basically the code you already have now
+//	}
+	
+	// keep this method here
+//	public static void writeJSON(Path path) {
+//		JSONWriter.asDoubleNestedObject(index, path);
+//	}
+	
 //-----------------------------------------------------------------------------------------------//
 // Method: writeJSON	
 // Description: This complex method makes use of multiple iterators
