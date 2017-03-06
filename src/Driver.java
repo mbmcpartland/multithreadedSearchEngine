@@ -1,83 +1,85 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.TreeSet;
-import java.util.stream.Stream;
-import java.awt.List;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
-// TODO Always address your warnings
 
-// TODO You can avoid having import warnings by configuring Eclipse "Save Actions" to always "Organize Imports" on save.
-
-// TODO Add Javadoc comments to all classes and methods
-
-public class Driver { 
-
-//-----------------------------------------------------------------------------------------------//
-// Method: main	
-// Description: This method takes in a String representation of the path of
-//				In this Driver class, my main method first calls handleArgs
-//				and checkArgs, which are two methods in my Helper class. To
-//				read more about handleArgs and checkArgs, you can go to my
-//				Helper class to read my notes about what they both do. After
-//				doing my necessary checks in the arguments passed in through
-//				the command line, I call my fileExists method from my Helper
-//				class.  If the input file exists, then I call my most important
-//				function for this whole project, which is my readAndBuild
-//				method in my Helper class.
-//-----------------------------------------------------------------------------------------------//
-	
-	// TODO You can throw exceptions everywhere EXCEPT main
-	
-	// TODO Driver should have project-specific argument handling
-	// TODO All other classes must be generalized
+/**
+ * This is my Driver class that does argument-handling
+ * and calls all appropriate methods to create the
+ * inverted index and write to the JSON file.
+ * @author mitchellmcpartland
+ */
+public class Driver { 	
 	
 	/**
-	 * TODO Add description here
-	 * @param args describe parameter here
-	 * @throws IOException
+	 * I use ArgumentMap to make argument-handling easier. I create
+	 * a new WordIndex object, and then I do a couple of checks
+	 * for the input path.  If the input path passes the tests,
+	 * then I use my DirectoryTraverser class to check if the
+	 * input path is an html file or a directory.  If it is a
+	 * directory, then I call my getFileNames function from
+	 * DirectoryTraverser to get an ArrayList of paths. I then
+	 * call my readAndBuildIndex function from my readAndBuild
+	 * class to build the index.  Once the index has been created,
+	 * I use my ArgumentMap again to see if the "-index" flag was
+	 * entered.  If it was, then I check if a output path was
+	 * provided.  I then simply call my writeJSON function from
+	 * my JSONWriter class to write to the output file.
+	 * @param args
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		
-		String[] inputOutput = Helper.handleArgs(args);
-		if(inputOutput[0] == null && inputOutput[1] == null) {
-			return;
-		}
-		
-		int[] threeThings = Helper.checkArgs(args);
-		if(threeThings[2] == 6) {
-			return;
-		}
-		
-		Path inputPath = Paths.get(inputOutput[0]);
-		if(Helper.fileExists(inputPath) == true) {
-			return;
-		}
-		
-		Helper.readAndBuild(inputOutput, threeThings[1], inputPath);
-		
-		/* TODO Try this
 		ArgumentMap map = new ArgumentMap(args);
 		WordIndex index = new WordIndex();
 		
-		if (map.hasFlag("-path")) {
-			trigger the directory traversal and reading of files here
+		if(map.hasFlag("-path")) {
+			String path = map.getString("-path");
+			if(path == null) {
+				return;
+			}
+			Path inputPath = Paths.get(path);
+			if(Files.notExists(inputPath, new LinkOption[]{LinkOption.NOFOLLOW_LINKS}) == true) {
+				return;
+			}
+			if(DirectoryTraverser.isHTML(inputPath) == false) {
+				ArrayList<Path> htmlFiles = new ArrayList<Path>();
+				htmlFiles = DirectoryTraverser.getFileNames(htmlFiles, inputPath);
+				try {
+					readAndBuild.readAndBuildIndex(htmlFiles, index);
+				} catch (IOException e) {
+					e.printStackTrace();
+					throw new IllegalArgumentException("Read Error");
+				}
+			} else {
+				try {
+					readAndBuild.readAndBuildIndex(inputPath, index);
+				} catch (IOException e) {
+					e.printStackTrace();
+					throw new IllegalArgumentException("Read Error");
+				}
+			}
 		}
 		
-		if (map.hasFlag("-index")) {
-			trigger writing your word index to file here
+		if(map.hasFlag("-index")) {
+			String outputPath = map.getString("-index");
+			if(outputPath == null) {
+				try {
+					JSONWriter.writeJSON(index, Paths.get("index.json"));
+				} catch (IOException e) {
+					e.printStackTrace();
+					throw new IllegalArgumentException("Write Error");
+				}
+			} else {
+				try {
+					JSONWriter.writeJSON(index, Paths.get(outputPath));
+				} catch (IOException e) {
+					e.printStackTrace();
+					throw new IllegalArgumentException("Write Error");
+				}
+			}
 		}
-		*/
 	}
 }
