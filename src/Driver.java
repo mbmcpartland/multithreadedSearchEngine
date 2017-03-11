@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+// TODO Address warnings
 
 /**
  * This is my Driver class that does argument-handling
@@ -31,12 +32,23 @@ public class Driver {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		// TODO No stack traces or throwing in main, always output user-friendly error messages
 		
 		ArgumentMap map = new ArgumentMap(args);
 		WordIndex index = new WordIndex();
 		
 		if(map.hasFlag("-path")) {
 			String path = map.getString("-path");
+			/*
+			try {
+				ArrayList<Path> htmlFiles = ..
+				readandBuildIndex()
+			}
+			catch () {
+				Unable to build the index from path + path
+			}
+			*/
+			
 			if(path == null) {
 				return;
 			}

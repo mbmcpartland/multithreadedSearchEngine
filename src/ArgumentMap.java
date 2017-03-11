@@ -48,7 +48,7 @@ public class ArgumentMap {
 			if(flag == true && value == true) {
 				map.put(args[i], args[i + 1]);
 			}
-			if(flag == true && value == false) {
+			if(flag == true && value == false) { // TODO else if
 				map.put(args[i], null);
 			}
 		}
@@ -68,6 +68,14 @@ public class ArgumentMap {
 		} else {
 			return false;
 		}
+		
+		// TODO 
+//		if (arg == null) {
+//			return false;
+//		}
+//		
+//		arg = arg.trim();
+//		return arg.length() > 1 && arg.startsWith("-");
 	}
 
 	/**
@@ -76,6 +84,8 @@ public class ArgumentMap {
 	 * @return
 	 */
 	public static boolean isValue(String arg) {
+		// TODO Same as isflag
+		
 		if(arg == null || arg.length() == 0) {
 			return false;
 		}
@@ -108,6 +118,8 @@ public class ArgumentMap {
 		} else {
 			return false;
 		}
+		
+		// TODO return map.containsKey(flag);
 	}
 
 	/**
@@ -120,6 +132,7 @@ public class ArgumentMap {
 	 * @return true if the flag is in the argument map and has a non-null value
 	 */
 	public boolean hasValue(String flag) {
+		// TODO Return the condition
 		if(map.containsKey(flag) && map.get(flag) != null) {
 			return true;
 		} else {
@@ -136,6 +149,8 @@ public class ArgumentMap {
 	 * @return value as a String or null if flag or value was not found
 	 */
 	public String getString(String flag) {
+		// TODO map.get(flag);
+		
 		if(map.containsKey(flag)) {
 			String value = map.get(flag);
 			if(value == null) {
@@ -169,6 +184,13 @@ public class ArgumentMap {
 		} else {
 			return defaultValue;
 		}
+
+		// TODO 
+//		if ( map.get(flag) == null) {
+//			return defaultValue;
+//		}
+//		
+//		return map.get(flag);
 	}
 
 	/**
@@ -199,6 +221,14 @@ public class ArgumentMap {
 			}
 		}
 		return defaultValue;
+
+		// TODO 
+//		try {
+//			return Integer.parseInt(map.get(flag));
+//		}
+//		catch (NumberFormatException|NullPointerException e) {
+//			return defaultValue;
+//		}
 	}
 
 	@Override

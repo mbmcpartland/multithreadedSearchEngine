@@ -17,6 +17,11 @@ import java.util.Map.Entry;
  */
 public class JSONWriter {
 
+	// TODO More general... also makes your life easier in WordIndex...
+	// public static void writeJSON(TreeMap<String, TreeMap<String, TreeSet<Integer>>>> map, Path path)
+	
+	// TODO Avoid suppressing warnings
+	
 	/**
 	 * This function takes in my WordIndex and
 	 * the output path to write to. I use three
@@ -78,6 +83,8 @@ public class JSONWriter {
 			writer.flush();
 		}
 	}
+	
+	// TODO Break into methods for TreeSet, TreeMap<..., TreeSet>
 		
 	/**
 	 * This function was provided by Sophie

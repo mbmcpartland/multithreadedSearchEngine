@@ -5,6 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+// TODO Capitalize properly, and think of class names as job titles
+// TODO InvertedIndexBuilder
+
 /**
  * This class is used to read the input files
  * and then to build the WordIndex. My first
@@ -27,9 +30,10 @@ public class readAndBuild {
 	 * this class.
 	 * @param ArrayList<Path>, WordIndex
 	 */
-	
+	// TODO buildFromHTML()
 	public static void readAndBuildIndex(ArrayList<Path> htmlFiles, WordIndex index) throws IOException {
 		for(Path path : htmlFiles) {
+			// TODO reduce repeated code and call your readAndBuildIndex()
 			StringBuilder html = new StringBuilder();
 			try(BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
 				for(String x = reader.readLine(); x != null ; x = reader.readLine()) {
@@ -68,6 +72,7 @@ public class readAndBuild {
 		}
 	}
 	
+	// TODO Make this an addAll(String[] words, String path) in your inverted index class
 	/**
 	 * This function takes in a String representation of
 	 * the path. It also takes in the WordIndex that needs

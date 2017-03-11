@@ -16,6 +16,8 @@ public class DirectoryTraverser {
 	public static ArrayList<Path> getFileNames(ArrayList<Path> files, Path directory) {
 		try(DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
 			for(Path path : stream) {
+				// TODO Do not convert toFile() everrrrrrrr.
+				// TODO Files.isDirectory(path)
 				if(path.toFile().isDirectory()) {
 					getFileNames(files, path);
 				} else {
@@ -25,11 +27,31 @@ public class DirectoryTraverser {
 				}
 			}
 		} catch(IOException e) {
+			// TODO No stack traces
+			// TODO Either throw this to Driver and let Driver.main take care of it
+			// TODO Or, output something user-friendly
+			
+			
 			e.printStackTrace();
 			throw new IllegalArgumentException("The directory is invalid");
 		}
 		return files;
 	}
+	
+	/*
+	 TODO
+	public static ArrayList<Path> getFileNames(ArrayList<Path> files, Path directory) { 
+	 
+	 	if (Files.isDirectory(directory)) {
+	 		directory stream...
+	 			for loop...
+	 				getFileNames(subpath)
+	 	}
+	 	else if (isHTML()) {
+	 		add the path to your list
+	 	}
+	 
+	 */
 	
 	/**
 	 * This simple function is used to check if a path
@@ -45,6 +67,7 @@ public class DirectoryTraverser {
 		}
 	}
 	
+	// TODO Remove?
 	/**
 	 * This is another simple function that is used
 	 * to check if a file exists or not.
