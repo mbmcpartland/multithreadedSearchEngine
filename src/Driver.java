@@ -1,9 +1,12 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 /**
@@ -31,7 +34,7 @@ public class Driver {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
+
 		ArgumentMap map = new ArgumentMap(args);
 		WordIndex index = new WordIndex();
 		
@@ -78,6 +81,43 @@ public class Driver {
 				} catch (IOException e) {
 					e.printStackTrace();
 					throw new IllegalArgumentException("Write Error");
+				}
+			}
+		}
+		
+		Queries theQueries = new Queries();
+		
+		if(map.hasFlag("-query")) {
+			if(map.getString("-query") != null) {
+				if(Files.notExists(Paths.get(map.getString("-query")), new LinkOption[]{LinkOption.NOFOLLOW_LINKS}) == true) {
+					return;
+				}
+				try {
+					readAndBuild.readQueryFile(Paths.get(map.getString("-query")), theQueries);
+				} catch (IOException e) {
+					throw new IllegalArgumentException("Illegal Arguments");
+				}
+			}
+		}
+		
+		if(map.hasFlag("-results")) {
+			SearchResults results = new SearchResults();
+			if(!(map.hasFlag("-exact"))) {
+				Finder.FinderP(index, results, theQueries);
+			} else {
+				Finder.FinderE(index, results, theQueries);
+			}
+			if(map.getString("-results") == null) {
+				try {
+					JSONWriter.writeResults(results, Paths.get("results.json"));
+				} catch (IOException e) {
+
+				}
+			} else {
+				try {
+					JSONWriter.writeResults(results, Paths.get(map.getString("-results")));
+				} catch (IOException e) {
+
 				}
 			}
 		}
