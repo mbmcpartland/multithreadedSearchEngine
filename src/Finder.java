@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 
 public class Finder {
 
-	public static void FinderP(WordIndex index, SearchResults results, Queries queries) {
+	public static void FinderP(InvertedIndex index, SearchResults results, Queries queries) {
 		Iterator<String> it = queries.getIterator();
 		while(it.hasNext()) {
 			String[] words = WordParser.parseWords(it.next());
@@ -17,7 +17,7 @@ public class Finder {
 		}
 	}
 	
-	public static void FinderE(WordIndex index, SearchResults results, Queries queries) {
+	public static void FinderE(InvertedIndex index, SearchResults results, Queries queries) {
 		Iterator<String> it = queries.getIterator();
 		while(it.hasNext()) {
 			String[] words = WordParser.parseWords(it.next());
@@ -29,7 +29,7 @@ public class Finder {
 		}
 	}
 	
-	public static void FinderPartial(WordIndex index, SearchResults results, String searchWord) {
+	public static void FinderPartial(InvertedIndex index, SearchResults results, String searchWord) {
 		Iterator<TreeMap<String, TreeMap<String, TreeSet<Integer>>>> it1 = index.getIterator();
 		int found = 0;
 		while(it1.hasNext()) {
@@ -47,7 +47,7 @@ public class Finder {
 		}
 	}
 	
-	public static void FinderPartial(WordIndex index, SearchResults results, String[] words) {
+	public static void FinderPartial(InvertedIndex index, SearchResults results, String[] words) {
 		@SuppressWarnings("unchecked")
 		Iterator<TreeMap<String, TreeMap<String, TreeSet<Integer>>>> it1 = index.getIterator();
 		String proper = getProperName(words);
@@ -70,7 +70,7 @@ public class Finder {
 		}
 	}
 	
-	public static void FinderExact(WordIndex index, SearchResults results, String searchWord) {
+	public static void FinderExact(InvertedIndex index, SearchResults results, String searchWord) {
 		Iterator<TreeMap<String, TreeMap<String, TreeSet<Integer>>>> it1 = index.getIterator();
 		int found = 0;
 		while(it1.hasNext()) {
@@ -88,7 +88,7 @@ public class Finder {
 		}
 	}
 	
-	public static void FinderExact(WordIndex index, SearchResults results, String[] words) {
+	public static void FinderExact(InvertedIndex index, SearchResults results, String[] words) {
 		@SuppressWarnings("unchecked")
 		Iterator<TreeMap<String, TreeMap<String, TreeSet<Integer>>>> it1 = index.getIterator();
 		String proper = getProperName(words);
