@@ -36,7 +36,7 @@ public class Driver {
 	public static void main(String[] args) {
 
 		ArgumentMap map = new ArgumentMap(args);
-		WordIndex index = new WordIndex();
+		InvertedIndex index = new InvertedIndex();
 		
 		if(map.hasFlag("-path")) {
 			String path = map.getString("-path");
