@@ -48,51 +48,38 @@ public class ArgumentMap {
 			if(flag == true && value == true) {
 				map.put(args[i], args[i + 1]);
 			}
-			if(flag == true && value == false) { // TODO else if
+			if(flag == true && value == false) { // TODO else if (breaks code?)
 				map.put(args[i], null);
 			}
 		}
 	}
 
 	/**
+	 * Determines whether the specified arg is a flag.
 	 *
 	 * @param arg
-	 * @return
+	 * @return boolean
 	 */
 	public static boolean isFlag(String arg) {
-		if(arg == null || arg.length() == 0) {
+		if(arg == null) {
 			return false;
 		}
-		if(arg.charAt(0) == '-' && arg.length() >= 2 && arg.charAt(1) != ' ') {
-			return true;
-		} else {
-			return false;
-		}
-		
-		// TODO 
-//		if (arg == null) {
-//			return false;
-//		}
-//		
-//		arg = arg.trim();
-//		return arg.length() > 1 && arg.startsWith("-");
+		arg = arg.trim();
+		return arg.length() > 1 && arg.startsWith("-");
 	}
 
 	/**
-	 *
+	 * Determines whether the specified arg is a value.
+	 * 
 	 * @param arg
-	 * @return
+	 * @return boolean
 	 */
 	public static boolean isValue(String arg) {
-		// TODO Same as isflag
-		
-		if(arg == null || arg.length() == 0) {
+		if(arg == null) {
 			return false;
 		}
-		if(arg.charAt(0) == '-' || arg.equals(" ") || arg.charAt(0) == '\t') {
-			return false;
-		}
-		return true;
+		arg = arg.trim();
+		return arg.length() > 1 && !(arg.startsWith("-"));
 	}
 
 	/**
@@ -113,13 +100,7 @@ public class ArgumentMap {
 	 * @return true if the flag is in the argument map
 	 */
 	public boolean hasFlag(String flag) {
-		if(map.containsKey(flag)) {
-			return true;
-		} else {
-			return false;
-		}
-		
-		// TODO return map.containsKey(flag);
+		return map.containsKey(flag);
 	}
 
 	/**
@@ -132,12 +113,7 @@ public class ArgumentMap {
 	 * @return true if the flag is in the argument map and has a non-null value
 	 */
 	public boolean hasValue(String flag) {
-		// TODO Return the condition
-		if(map.containsKey(flag) && map.get(flag) != null) {
-			return true;
-		} else {
-			return false;
-		}
+		return map.containsKey(flag) && (map.get(flag) != null);
 	}
 
 	/**
@@ -149,17 +125,8 @@ public class ArgumentMap {
 	 * @return value as a String or null if flag or value was not found
 	 */
 	public String getString(String flag) {
-		// TODO map.get(flag);
-		
-		if(map.containsKey(flag)) {
-			String value = map.get(flag);
-			if(value == null) {
-				return null;
-			}
-			return value;
-		} else {
-			return null;
-		}
+		return map.get(flag);
+
 	}
 
 	/**
@@ -175,22 +142,10 @@ public class ArgumentMap {
 	 *         value is missing
 	 */
 	public String getString(String flag, String defaultValue) {
-		if(map.containsKey(flag)) {
-			String value = map.get(flag);
-			if(value == null) {
-				return defaultValue;
-			}
-			return value;
-		} else {
+		if (map.get(flag) == null) {
 			return defaultValue;
 		}
-
-		// TODO 
-//		if ( map.get(flag) == null) {
-//			return defaultValue;
-//		}
-//		
-//		return map.get(flag);
+		return map.get(flag);
 	}
 
 	/**
@@ -206,29 +161,12 @@ public class ArgumentMap {
 	 *         value is missing
 	 */
 	public int getInteger(String flag, int defaultValue) {
-		int int_value = defaultValue;
-		if(map.containsKey(flag)) {
-			String value = map.get(flag);
-			if(value == null) {
-				return defaultValue;
-			} else {
-				try {
-					int_value = Integer.parseInt(value);
-				}
-				catch (NumberFormatException e)
-				{}
-				return int_value;
-			}
+		try {
+			return Integer.parseInt(map.get(flag));
 		}
-		return defaultValue;
-
-		// TODO 
-//		try {
-//			return Integer.parseInt(map.get(flag));
-//		}
-//		catch (NumberFormatException|NullPointerException e) {
-//			return defaultValue;
-//		}
+		catch (NumberFormatException|NullPointerException e) {
+			return defaultValue;
+		}
 	}
 
 	@Override
