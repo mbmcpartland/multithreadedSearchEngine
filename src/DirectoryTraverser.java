@@ -35,14 +35,32 @@ public class DirectoryTraverser {
 		}
 		return files;
 	}
+
+	// TODO Choose one or the other:
+//	public static void getFileNames(ArrayList<Path> files, Path directory)
+//	public static ArrayList<Path> getFileNames(Path directory) 
+	
+//	public static ArrayList<Path> getFileNames(Path directory) {
+//		ArrayList<Path> paths = new ArrayList<>();
+//		getFileNames(paths, directory);
+//		return paths;
+//	}
+//	
+//	private static void getFileNames(ArrayList<Path> files, Path directory) {
+//		your code as it is right now
+//	}
+	
 	
 	/**
 	 * This simple function is used to check if a path
 	 * file is an html file or an htm file.
 	 * @param Path of the file to be checked
-	 */
-		
+	 */		
 	public static boolean isHTML(Path path) {
+		// TODO 
+//		String filename = path.toString().toLowerCase();
+//		return filename.endsWith(".html") || filename.endsWith(".htm");
+		
 		if(path.toString().toLowerCase().endsWith(".html") || path.toString().toLowerCase().endsWith(".htm")) {
 			return true;
 		} else {

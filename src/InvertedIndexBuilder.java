@@ -20,10 +20,9 @@ public class InvertedIndexBuilder {
 	 * @param the ArrayList of htmlFiles to iterate through
 	 * @param the InvertedIndex that is being added to
 	 */
-	
 	public static void buildFromHTML(ArrayList<Path> htmlFiles, InvertedIndex index) throws IOException {
 		for(Path path : htmlFiles) {
-			buildFromHTML(index, path);
+			buildFromHTML(path, index);
 		}
 	}
 	
@@ -38,8 +37,7 @@ public class InvertedIndexBuilder {
 	 * @param the input file that will be read and stripped
 	 *        of any html code
 	 */
-	
-	public static void buildFromHTML(InvertedIndex index, Path inputFile) throws IOException {
+	public static void buildFromHTML(Path inputFile, InvertedIndex index) throws IOException {
 		StringBuilder html = new StringBuilder();
 		try(BufferedReader reader = Files.newBufferedReader(inputFile, StandardCharsets.UTF_8)) {
 			for(String x = reader.readLine(); x != null ; x = reader.readLine()) {

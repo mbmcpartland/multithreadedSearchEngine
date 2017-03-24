@@ -26,16 +26,22 @@ public class Driver {
 		
 		if(map.hasFlag("-path")) {
 			String path = map.getString("-path");
+			
 			if(path == null) {
+				// TODO Output a warning to the user
 				return;
 			}
+			
 			Path inputPath = Paths.get(path);
+			
+			// TODO Remove, if this is true an exception will happen
 			if(Files.notExists(inputPath, new LinkOption[]{LinkOption.NOFOLLOW_LINKS}) == true) {
 				return;
 			}
-			if(DirectoryTraverser.isHTML(inputPath) == false) {
+			
+			if(DirectoryTraverser.isHTML(inputPath) == false) { // TODO Remove this since your DirectoryTraverser works on files
 				ArrayList<Path> htmlFiles = new ArrayList<Path>();
-				htmlFiles = DirectoryTraverser.getFileNames(htmlFiles, inputPath);
+				htmlFiles = DirectoryTraverser.getFileNames(htmlFiles, inputPath); // Start from here
 				try {
 					InvertedIndexBuilder.buildFromHTML(htmlFiles, index);
 				} catch (IOException e) {
@@ -43,7 +49,7 @@ public class Driver {
 				}
 			} else {
 				try {
-					InvertedIndexBuilder.buildFromHTML(index, inputPath);
+					InvertedIndexBuilder.buildFromHTML(inputPath, index);
 				} catch (IOException e) {
 					System.out.println("Unable to build the index from the provided path");
 				}
@@ -51,7 +57,7 @@ public class Driver {
 		}
 		
 		if(map.hasFlag("-index")) {
-			String outputPath = map.getString("-index");
+			String outputPath = map.getString("-index"); // TODO map.getString("-index", "index.json");
 			if(outputPath == null) {
 				index.toJSON(Paths.get("index.json"));
 			} else {

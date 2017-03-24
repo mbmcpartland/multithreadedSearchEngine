@@ -13,10 +13,11 @@ public class InvertedIndex {
 
 	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> index;
 	
+	// TODO No blank line between the Javadoc and method
+	
 	/**
 	 * Initializes the inverted index.
 	 */
-	
 	public InvertedIndex() {
 		this.index = new TreeMap<>();
 	}
@@ -28,7 +29,6 @@ public class InvertedIndex {
 	 * @param position the position at the path the word was found
 	 * @param path the path the word was found
 	 */
-	
 	public void add(String word, int position, String path) {
 		if(this.index.containsKey(word)) {
 			TreeMap<String, TreeSet<Integer>> map = this.index.get(word);
@@ -50,6 +50,17 @@ public class InvertedIndex {
 			map.put(path, set);
 			this.index.put(word, map);
 		}
+		
+		// TODO When you see repeated code, its time to rethink the problem
+//		if (!this.index.containsKey(word)) {
+//			this.index.put(word, new TreeMap<>());
+//		}
+//		
+//		if (!this.index.get(word).containsKey(path)) {
+//			this.index.get(word).put(path, new TreeSet<>());
+//		}
+//		
+//		this.index.get(word).get(path).add(position);
 	}
 	
 	/**
@@ -172,8 +183,8 @@ public class InvertedIndex {
 	 * @param the path that contained the words
 	 */
 	
-	public void addAll(String[] words, String path) {
-		int m = 1;
+	public void addAll(String[] words, String path) { 
+		int m = 1; // TODO refactor m to "count" or "position" or "index"
 		for(String word : words) {
 			this.add(word, m, path);
 			m++;
