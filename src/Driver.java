@@ -1,6 +1,4 @@
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -18,7 +16,6 @@ public class Driver {
 	 * InvertedIndex, and writes to the JSON file.
 	 * @param args
 	 */
-	
 	public static void main(String[] args) {
 		
 		ArgumentMap map = new ArgumentMap(args);
@@ -26,37 +23,30 @@ public class Driver {
 		
 		if(map.hasFlag("-path")) {
 			String path = map.getString("-path");
+			
 			if(path == null) {
+				System.out.println("No path was provided");
 				return;
 			}
+			
 			Path inputPath = Paths.get(path);
-			if(Files.notExists(inputPath, new LinkOption[]{LinkOption.NOFOLLOW_LINKS}) == true) {
-				return;
+			ArrayList<Path> htmlFiles = new ArrayList<Path>();
+			DirectoryTraverser.getFileNames(htmlFiles, inputPath); // Start from here
+			try {
+				InvertedIndexBuilder.buildFromHTML(htmlFiles, index);
+			} catch (IOException e) {
+				System.out.println("Unable to build the index from the provided path");
 			}
-			if(DirectoryTraverser.isHTML(inputPath) == false) {
-				ArrayList<Path> htmlFiles = new ArrayList<Path>();
-				htmlFiles = DirectoryTraverser.getFileNames(htmlFiles, inputPath);
-				try {
-					InvertedIndexBuilder.buildFromHTML(htmlFiles, index);
-				} catch (IOException e) {
-					System.out.println("Unable to build the index from the provided path");
-				}
-			} else {
-				try {
-					InvertedIndexBuilder.buildFromHTML(index, inputPath);
-				} catch (IOException e) {
-					System.out.println("Unable to build the index from the provided path");
-				}
+			try {
+				InvertedIndexBuilder.buildFromHTML(inputPath, index);
+			} catch (IOException e) {
+				System.out.println("Unable to build the index from the provided path");
 			}
 		}
 		
 		if(map.hasFlag("-index")) {
-			String outputPath = map.getString("-index");
-			if(outputPath == null) {
-				index.toJSON(Paths.get("index.json"));
-			} else {
-				index.toJSON(Paths.get(outputPath));
-			}
+			String outputPath = map.getString("-index", "index.json");
+			index.toJSON(Paths.get(outputPath));
 		}
 	}
 }

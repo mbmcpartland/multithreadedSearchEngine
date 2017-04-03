@@ -42,9 +42,11 @@ public class ArgumentMap {
 		boolean value = false;
 		for(int i = 0 ; i < args.length ; i++) {
 			flag = isFlag(args[i]);
+			
 			if((i + 1) != args.length) {
 				value = isValue(args[i + 1]);
 			}
+			
 			if(flag == true && value == true) {
 				map.put(args[i], args[i + 1]);
 			}
@@ -169,6 +171,10 @@ public class ArgumentMap {
 		}
 	}
 
+	/**
+	 * Overridden toString method.
+	 * 
+	 */	
 	@Override
 	public String toString() {
 		return map.toString();

@@ -16,7 +16,6 @@ public class InvertedIndex {
 	/**
 	 * Initializes the inverted index.
 	 */
-	
 	public InvertedIndex() {
 		this.index = new TreeMap<>();
 	}
@@ -28,35 +27,20 @@ public class InvertedIndex {
 	 * @param position the position at the path the word was found
 	 * @param path the path the word was found
 	 */
-	
 	public void add(String word, int position, String path) {
-		if(this.index.containsKey(word)) {
-			TreeMap<String, TreeSet<Integer>> map = this.index.get(word);
-			if(map.containsKey(path)) {
-				TreeSet<Integer> set = map.get(path);
-				set.add(position);
-				map.put(path, set);
-				this.index.put(word, map);
-			} else {
-				TreeSet<Integer> set = new TreeSet<>();
-				set.add(position);
-				map.put(path, set);
-				this.index.put(word, map);
-			}
-		} else {
-			TreeMap<String, TreeSet<Integer>> map = new TreeMap<>();
-			TreeSet<Integer> set = new TreeSet<>();
-			set.add(position);
-			map.put(path, set);
-			this.index.put(word, map);
+		if(!this.index.containsKey(word)) {
+			this.index.put(word, new TreeMap<>());
 		}
+		if(!this.index.get(word).containsKey(path)) {
+			this.index.get(word).put(path, new TreeSet<>());
+		}
+		this.index.get(word).get(path).add(position);
 	}
 	
 	/**
 	 * Overridden toString method.
 	 * 
 	 */
-	
 	@Override
 	public String toString() {
 		return this.toString();
@@ -67,7 +51,6 @@ public class InvertedIndex {
 	 * 
 	 * @param the word that the user wants to know if the index contains
 	 */
-	
 	public boolean contains(String word) {
 		return this.index.containsKey(word);
 	}
@@ -79,7 +62,6 @@ public class InvertedIndex {
 	 * @param the word that may have the path
 	 * @param path that the user wants to know if the index contains
 	 */
-	
 	public boolean contains(String word, String path) {
 		if(this.contains(word) == true) {
 			return this.index.get(word).containsKey(path);
@@ -96,7 +78,6 @@ public class InvertedIndex {
 	 * @param the path that may have the position
 	 * @param position that the user wants to know if the index contains
 	 */
-	
 	public boolean contains(String word, String path, int position) {
 		if(this.contains(word, path) == true) {
 			TreeMap<String, TreeSet<Integer>> nested = this.index.get(word);
@@ -111,7 +92,6 @@ public class InvertedIndex {
 	 * Returns the number of words in the inverted index.
 	 * 
 	 */
-	
 	public int count() {
 		return this.index.size();
 	}
@@ -121,7 +101,6 @@ public class InvertedIndex {
 	 * 
 	 * @param the word in which the number of paths is returned
 	 */
-	
 	public int count(String word) {
 		if(this.contains(word) == true) {
 			TreeMap<String, TreeSet<Integer>> nested = this.index.get(word);
@@ -138,7 +117,6 @@ public class InvertedIndex {
 	 * @param the word that has the path
 	 * @param the path in which the number of positions is returned
 	 */
-	
 	public int count(String word, String path) {
 		if(this.contains(word, path) == true) {
 			TreeMap<String, TreeSet<Integer>> nested = this.index.get(word);
@@ -154,7 +132,6 @@ public class InvertedIndex {
 	 * 
 	 * @param the output path that will be written to
 	 */
-	
 	public void toJSON(Path path) {
 		try {
 			JSONWriter.writeJSON(this.index, path);
@@ -171,12 +148,11 @@ public class InvertedIndex {
 	 *        and added to the index
 	 * @param the path that contained the words
 	 */
-	
-	public void addAll(String[] words, String path) {
-		int m = 1;
+	public void addAll(String[] words, String path) { 
+		int position = 1;
 		for(String word : words) {
-			this.add(word, m, path);
-			m++;
+			this.add(word, position, path);
+			position++;
 		}
 	}
 }

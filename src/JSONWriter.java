@@ -23,7 +23,6 @@ public class JSONWriter {
 	 * @param InvertedIndex to read
 	 * @param output Path to write the JSON file to
 	 */
-
 	public static void writeJSON(TreeMap<String, TreeMap<String, TreeSet<Integer>>> index, Path path) throws IOException {
 		try(BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			writer.write("{");
@@ -59,7 +58,6 @@ public class JSONWriter {
 	 *        InvertedIndex
 	 * @param BufferedWriter to write to the output file
 	 */
-	
 	public static void nestedMapWriter(TreeMap<String, TreeSet<Integer>> nestedMap, BufferedWriter writer) throws IOException {
 		Iterator<Entry<String, TreeSet<Integer>>> it = nestedMap.entrySet().iterator();
 		while(it.hasNext()) {
@@ -87,7 +85,6 @@ public class JSONWriter {
 	 * @param TreeSet of Integers that will be written
 	 * @param BufferedWriter to write to the output file
 	 */
-	
 	public static void nestedSetWriter(TreeSet<Integer> positions, BufferedWriter writer) throws IOException {
 		Iterator<Integer> it = positions.iterator();
 		while(it.hasNext()) {
@@ -109,7 +106,6 @@ public class JSONWriter {
 	 * @param number of indents that will be
 	 *        returned in a String
 	 */
-	
 	public static String indent(int times) {
 		char[] tabs = new char[times];
 		Arrays.fill(tabs, '\t');
