@@ -13,6 +13,8 @@ public class InvertedIndex {
 
 	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> index;
 	
+	// TODO No blank line between the Javadoc and method
+	
 	/**
 	 * Initializes the inverted index.
 	 */

@@ -32,6 +32,21 @@ public class DirectoryTraverser {
 			files.add(directory);
 		}
 	}
+
+	// TODO Choose one or the other:
+//	public static void getFileNames(ArrayList<Path> files, Path directory)
+//	public static ArrayList<Path> getFileNames(Path directory) 
+	
+//	public static ArrayList<Path> getFileNames(Path directory) {
+//		ArrayList<Path> paths = new ArrayList<>();
+//		getFileNames(paths, directory);
+//		return paths;
+//	}
+//	
+//	private static void getFileNames(ArrayList<Path> files, Path directory) {
+//		your code as it is right now
+//	}
+	
 	
 	/**
 	 * This simple function is used to check if a path

@@ -47,6 +47,5 @@ public class Driver {
 		if(map.hasFlag("-index")) {
 			String outputPath = map.getString("-index", "index.json");
 			index.toJSON(Paths.get(outputPath));
-		}
-	}
+	  }
 }
