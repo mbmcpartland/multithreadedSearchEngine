@@ -9,7 +9,6 @@ import java.util.ArrayList;
  * gets the file names for html files.
  * 
  */
-
 public class DirectoryTraverser {
 	
 	/**
@@ -18,9 +17,8 @@ public class DirectoryTraverser {
 	 * 
 	 * @param empty ArrayList of Paths that will be filled and returned
 	 * @param directory that will be traversed
-	 */
-	
-	public static ArrayList<Path> getFileNames(ArrayList<Path> files, Path directory) {
+	 */	
+	public static void getFileNames(ArrayList<Path> files, Path directory) {
 		if(Files.isDirectory(directory)) {
 			try(DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
 				for(Path path : stream) {
@@ -33,7 +31,6 @@ public class DirectoryTraverser {
 		else if(isHTML(directory)) {
 			files.add(directory);
 		}
-		return files;
 	}
 
 	// TODO Choose one or the other:
@@ -57,14 +54,7 @@ public class DirectoryTraverser {
 	 * @param Path of the file to be checked
 	 */		
 	public static boolean isHTML(Path path) {
-		// TODO 
-//		String filename = path.toString().toLowerCase();
-//		return filename.endsWith(".html") || filename.endsWith(".htm");
-		
-		if(path.toString().toLowerCase().endsWith(".html") || path.toString().toLowerCase().endsWith(".htm")) {
-			return true;
-		} else {
-			return false;
-		}
+		String filename = path.toString().toLowerCase();
+		return filename.endsWith(".html") || filename.endsWith(".htm");
 	}
 }
