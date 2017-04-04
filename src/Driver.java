@@ -3,6 +3,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+// TODO Clean up old TODO comments in your code! There are at least 3.
+
 /**
  * This is my Driver class that does argument-handling
  * and calls all appropriate methods to create the
@@ -32,6 +34,8 @@ public class Driver {
 			Path inputPath = Paths.get(path);
 			ArrayList<Path> htmlFiles = new ArrayList<Path>();
 			DirectoryTraverser.getFileNames(htmlFiles, inputPath); // Start from here
+			
+			// TODO Fix TODOs in Builder, update here. Not expecting two different buildFromHTML calls here.
 			try {
 				InvertedIndexBuilder.buildFromHTML(htmlFiles, index);
 			} catch (IOException e) {
@@ -47,6 +51,6 @@ public class Driver {
 		if(map.hasFlag("-index")) {
 			String outputPath = map.getString("-index", "index.json");
 			index.toJSON(Paths.get(outputPath));
-	  }
+	  } // TODO Fix indentation
 	}
 }
