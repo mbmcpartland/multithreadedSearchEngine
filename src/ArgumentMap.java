@@ -50,7 +50,7 @@ public class ArgumentMap {
 			if(flag == true && value == true) {
 				map.put(args[i], args[i + 1]);
 			}
-			if(flag == true && value == false) { // TODO else if (breaks code?)
+			if(flag == true && value == false) {
 				map.put(args[i], null);
 			}
 		}
