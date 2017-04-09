@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -17,63 +16,32 @@ import java.util.Map.Entry;
  * file. I also put Sophie's indent function
  * in this class.
  * @author mitchellmcpartland
- * Proj2
  */
 public class JSONWriter {
 
 	/**
-	 * This function takes in my WordIndex and
-	 * the output path to write to. I use three
-	 * iterators for the two TreeMaps and the
-	 * nested TreeSet. This function doesn't
-	 * return anything.
-	 * @param WordIndex, Path
+	 * Used to write to the output JSON file.
+	 * 
+	 * @param InvertedIndex to read
+	 * @param output Path to write the JSON file to
 	 */
-
-	public static void writeJSON(InvertedIndex index, Path path) throws IOException {
+	public static void writeJSON(TreeMap<String, TreeMap<String, TreeSet<Integer>>> index, Path path) throws IOException {
 		try(BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			writer.write("{");
 			writer.write(System.lineSeparator());
-			@SuppressWarnings("unchecked")
-			Iterator<TreeMap<String, TreeMap<String, TreeSet<Integer>>>> it1 = index.getIterator();
-			while(it1.hasNext()) {
-				@SuppressWarnings("unchecked")
-				Entry<String, TreeMap<String, TreeSet<Integer>>> entry = (Entry<String, TreeMap<String, TreeSet<Integer>>>) it1.next();
+			Iterator<Entry<String, TreeMap<String, TreeSet<Integer>>>> it = index.entrySet().iterator();
+			while(it.hasNext()) {
+				Entry<String, TreeMap<String, TreeSet<Integer>>> entry = (Entry<String, TreeMap<String, TreeSet<Integer>>>) it.next();
 				String word = (String) entry.getKey();
 				writer.write(indent(1));
 				writer.write("\"" + word + "\": {");
 				writer.write(System.lineSeparator());
 				TreeMap<String, TreeSet<Integer>> nestedMap = (TreeMap<String, TreeSet<Integer>>) entry.getValue();
-				Iterator<Entry<String, TreeSet<Integer>>> it2 = nestedMap.entrySet().iterator();
-				while(it2.hasNext()) {
-					Entry<String, TreeSet<Integer>> entry2 = it2.next();
-					String file = entry2.getKey().toString();
-					TreeSet<Integer> positions = entry2.getValue();
-					writer.write(indent(2));
-					writer.write("\"" + file + "\": [");
-					writer.write(System.lineSeparator());
-					writer.write(indent(3));
-					Iterator<Integer> it3 = positions.iterator();
-					while(it3.hasNext()) {
-						writer.write(it3.next().toString());
-						if(it3.hasNext()) {
-							writer.write(",");
-							writer.write(System.lineSeparator());
-						}
-						writer.write(indent(3));
-					}
-					writer.write(System.lineSeparator());
-					writer.write(indent(2));
-					writer.write("]");
-					if(it2.hasNext()) {
-						writer.write(",");
-						writer.write(System.lineSeparator());
-					}
-				}
+				nestedMapWriter(nestedMap, writer);
 				writer.write(System.lineSeparator());
 				writer.write(indent(1));
 				writer.write("}");
-				if(it1.hasNext()) {
+				if(it.hasNext()) {
 					writer.write(",");
 				}
 				writer.write(System.lineSeparator());
@@ -83,48 +51,80 @@ public class JSONWriter {
 		}
 	}
 	
-	public static void writeResults(SearchResults results, Path path) throws IOException {
+	/**
+	 * Used to write information from the nested map
+	 * to the output JSON file.
+	 * 
+	 * @param TreeMap that maps a String to a TreeSet
+	 *        of Integers; the nested map in my
+	 *        InvertedIndex
+	 * @param BufferedWriter to write to the output file
+	 */
+	public static void nestedMapWriter(TreeMap<String, TreeSet<Integer>> nestedMap, BufferedWriter writer) throws IOException {
+		Iterator<Entry<String, TreeSet<Integer>>> it = nestedMap.entrySet().iterator();
+		while(it.hasNext()) {
+			Entry<String, TreeSet<Integer>> entry2 = it.next();
+			String file = entry2.getKey().toString();
+			TreeSet<Integer> positions = entry2.getValue();
+			writer.write(indent(2));
+			writer.write("\"" + file + "\": [");
+			writer.write(System.lineSeparator());
+			writer.write(indent(3));
+			nestedSetWriter(positions, writer);
+			writer.write(System.lineSeparator());
+			writer.write(indent(2));
+			writer.write("]");
+			if(it.hasNext()) {
+				writer.write(",");
+				writer.write(System.lineSeparator());
+			}
+		}
+	}
+	
+	/**
+	 * Used to write the positions for a given path.
+	 * 
+	 * @param TreeSet of Integers that will be written
+	 * @param BufferedWriter to write to the output file
+	 */
+	public static void nestedSetWriter(TreeSet<Integer> positions, BufferedWriter writer) throws IOException {
+		Iterator<Integer> it = positions.iterator();
+		while(it.hasNext()) {
+			writer.write(it.next().toString());
+			if(it.hasNext()) {
+				writer.write(",");
+				writer.write(System.lineSeparator());
+			}
+			writer.write(indent(3));
+		}
+	}
+	
+	/**
+	 * Used to write the search results to the
+	 * provided output path.
+	 * 
+	 * @param SearchResult object that contains the
+	 *        results of searching for the query
+	 * @param output path to write to
+	 */
+	public static void writeResults(TreeMap<String, TreeMap<String, TreeSet<Integer>>> results, Path path) throws IOException {
 		try(BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			writer.write("[");
 			writer.write(System.lineSeparator());
-			Iterator<TreeMap<String, HashMap<String, TreeSet<Integer>>>> it1 = results.getIterator();
+			Iterator<Entry<String, TreeMap<String, TreeSet<Integer>>>> it1 = results.entrySet().iterator();
 			while(it1.hasNext()) {
 				writer.write(indent(1));
 				writer.write("{");
 				writer.write(System.lineSeparator());
 				writer.write(indent(2));
-				@SuppressWarnings("unchecked")
-				Entry<String, HashMap<String, TreeSet<Integer>>> entry = (Entry<String, HashMap<String, TreeSet<Integer>>>) it1.next();
+				Entry<String, TreeMap<String, TreeSet<Integer>>> entry = (Entry<String, TreeMap<String, TreeSet<Integer>>>) it1.next();
 				String query = entry.getKey().toString();
 				writer.write("\"queries\": " + "\"" + query + "\",");
 				writer.write(System.lineSeparator());
 				writer.write(indent(2));
 				writer.write("\"results\": [");
 				writer.write(System.lineSeparator());
-				ArrayList<WriteObject> resultObjects = SearchResults.getWriteObj(entry);
-				Collections.sort(resultObjects, WriteObject.COUNT_COMPARATOR);
-				int i = 0;
-				for(WriteObject obj : resultObjects) {
-					i++;
-					writer.write(indent(3));
-					writer.write("{");
-					writer.write(System.lineSeparator());
-					writer.write(indent(4));
-					writer.write("\"where\": \"" + obj.getQuery() + "\",");
-					writer.write(System.lineSeparator());
-					writer.write(indent(4));
-					writer.write("\"count\": " + obj.getCount() + ",");
-					writer.write(System.lineSeparator());
-					writer.write(indent(4));
-					writer.write("\"index\": " + obj.getIndex());
-					writer.write(System.lineSeparator());
-					writer.write(indent(3));
-					writer.write("}");
-					if(i < resultObjects.size()) {
-						writer.write(",");
-					}
-					writer.write(System.lineSeparator());
-				}
+				writeAdditional(entry, writer);
 				writer.write(indent(2));
 				writer.write("]");
 				writer.write(System.lineSeparator());
@@ -139,6 +139,42 @@ public class JSONWriter {
 			writer.flush();
 		}
 	}
+	
+	/**
+	 * Used to write the rest of the search results
+	 * information that writeResults doesn't write.
+	 * 
+	 * @param Entry of the search word, with the files
+	 *        it was found in and the positions
+	 * @param BufferedWriter to write to the output file
+	 */
+	public static void writeAdditional(Entry<String, TreeMap<String, TreeSet<Integer>>> entry, BufferedWriter writer) throws IOException {
+		ArrayList<WriteObject> resultObjects = SearchResults.getWriteObj(entry);
+		Collections.sort(resultObjects, WriteObject.COUNT_COMPARATOR);
+		int i = 0;
+		for(WriteObject obj : resultObjects) {
+			i++;
+			writer.write(indent(3));
+			writer.write("{");
+			writer.write(System.lineSeparator());
+			writer.write(indent(4));
+			writer.write("\"where\": \"" + obj.getQuery() + "\",");
+			writer.write(System.lineSeparator());
+			writer.write(indent(4));
+			writer.write("\"count\": " + obj.getCount() + ",");
+			writer.write(System.lineSeparator());
+			writer.write(indent(4));
+			writer.write("\"index\": " + obj.getIndex());
+			writer.write(System.lineSeparator());
+			writer.write(indent(3));
+			writer.write("}");
+			if(i < resultObjects.size()) {
+				writer.write(",");
+			}
+			writer.write(System.lineSeparator());
+		}
+	}
+	
 	/**
 	 * This function was provided by Sophie
 	 * from the JSONWriter homework assignment.
@@ -146,7 +182,6 @@ public class JSONWriter {
 	 * of a certain number of indents.
 	 * @param int (for the number of indents)
 	 */
-	
 	public static String indent(int times) {
 		char[] tabs = new char[times];
 		Arrays.fill(tabs, '\t');

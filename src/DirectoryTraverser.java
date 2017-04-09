@@ -1,63 +1,45 @@
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+/**
+ * This class simply traverses directories and it
+ * gets the file names for html files.
+ * 
+ */
 public class DirectoryTraverser {
 	
 	/**
-	 * This function returns an ArrayList of Path
-	 * files that are also html files.
-	 * @param ArrayList<Path>, Path
-	 * Proj2
-	 */
-	
-	public static ArrayList<Path> getFileNames(ArrayList<Path> files, Path directory) {
-		try(DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
-			for(Path path : stream) {
-				if(path.toFile().isDirectory()) {
+	 * Recursive method that traverses a directory and returns
+	 * an ArrayList of html files.
+	 * 
+	 * @param empty ArrayList of Paths that will be filled and returned
+	 * @param directory that will be traversed
+	 */	
+	public static void getFileNames(ArrayList<Path> files, Path directory) {
+		if(Files.isDirectory(directory)) {
+			try(DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
+				for(Path path : stream) {
 					getFileNames(files, path);
-				} else {
-					if(isHTML(path) == true) {
-						files.add(path);
-					}
 				}
+			} catch(IOException e) {
+				System.out.println("The directory is invalid");
 			}
-		} catch(IOException e) {
-			e.printStackTrace();
-			throw new IllegalArgumentException("The directory is invalid");
 		}
-		return files;
+		else if(isHTML(directory)) {
+			files.add(directory);
+		}
 	}
 	
 	/**
 	 * This simple function is used to check if a path
 	 * file is an html file or an htm file.
-	 * @param Path
-	 */
-		
+	 * @param Path of the file to be checked
+	 */		
 	public static boolean isHTML(Path path) {
-		if(path.toString().toLowerCase().endsWith(".html") || path.toString().toLowerCase().endsWith(".htm")) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	/**
-	 * This is another simple function that is used
-	 * to check if a file exists or not.
-	 * @param Path
-	 */
-	
-	public static boolean pathExists(Path inputPath) {
-		boolean pathNotExists = Files.notExists(inputPath, new LinkOption[]{LinkOption.NOFOLLOW_LINKS});
-		if(pathNotExists == true) {
-			return true;
-		} else {
-			return false;
-		}
+		String filename = path.toString().toLowerCase();
+		return filename.endsWith(".html") || filename.endsWith(".htm");
 	}
 }

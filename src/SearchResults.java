@@ -1,25 +1,52 @@
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 
+/**
+ * This class is used to store the
+ * results of searching for words
+ * in the query.
+ * 
+ * @author mitchellmcpartland
+ */
 public class SearchResults {
 	
-	private final TreeMap<String, HashMap<String, TreeSet<Integer>>> results;
+	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> results;
 	
+	/**
+	 * Constructor for the SearchResults object
+	 * 
+	 */
 	public SearchResults() {
-		this.results = new TreeMap<String, HashMap<String, TreeSet<Integer>>>();
+		this.results = new TreeMap<String, TreeMap<String, TreeSet<Integer>>>();
 	}
 	
+	/**
+	 * Used to add a word from the query if there
+	 * were no instances found in the InvertedIndex.
+	 * 
+	 * @param query word to be added
+	 */
 	public void add(String word) {
-		this.results.put(word, new HashMap<String, TreeSet<Integer>>());
+		this.results.put(word, new TreeMap<String, TreeSet<Integer>>());
 	}
 	
+	/**
+	 * Used to add a word from the query, along
+	 * with the position and path from which
+	 * the word was found.
+	 * 
+	 * @param query word to be added
+	 * @param the position to be added
+	 * @param the path to be added
+	 */
 	public void add(String word, Integer position, String path) {
 		if(this.results.containsKey(word)) {
-			HashMap<String, TreeSet<Integer>> map = this.results.get(word);
+			TreeMap<String, TreeSet<Integer>> map = this.results.get(word);
 			if(map.containsKey(path)) {
 				TreeSet<Integer> set = map.get(path);
 				set.add(position);
@@ -32,7 +59,7 @@ public class SearchResults {
 				this.results.put(word, map);
 			}
 		} else {
-			HashMap<String, TreeSet<Integer>> map = new HashMap<>();
+			TreeMap<String, TreeSet<Integer>> map = new TreeMap<>();
 			TreeSet<Integer> set = new TreeSet<>();
 			set.add(position);
 			map.put(path, set);
@@ -40,14 +67,42 @@ public class SearchResults {
 		}
 	}
 	
-	public Iterator getIterator() {
-		Iterator it = this.results.entrySet().iterator();
-		return it;
+	/**
+	 * Used to iterate through the files and positions
+	 * of a specific word. Then calls add() to add
+	 * the necessary information.
+	 * 
+	 * @param query word to be added
+	 * @param iterator that goes through the files
+	 *        and positions for a certain word
+	 */
+	public void addResult(String searchWord, Iterator<Entry<String, TreeSet<Integer>>> it) {
+		while(it.hasNext()) {
+			Entry<String, TreeSet<Integer>> entry = it.next();
+			String file = entry.getKey().toString();
+			TreeSet<Integer> positions = entry.getValue();
+			Iterator<Integer> it3 = positions.iterator();
+			while(it3.hasNext()) {
+				Integer position = it3.next();
+				this.add(searchWord, position, file);
+			}
+		}
 	}
 	
-	public static ArrayList<WriteObject> getWriteObj(Entry<String, HashMap<String, TreeSet<Integer>>> entry) {
+	/**
+	 * Used to put a found word, its files, and its
+	 * positions into an ArrayList of WriteObjects.
+	 * This is done so that, when I have to write
+	 * the results to the output file, the files and
+	 * positions are sorted properly.
+	 * 
+	 * @param an entry that contains the found word,
+	 *        along with its associated files and
+	 *        positions
+	 */
+	public static ArrayList<WriteObject> getWriteObj(Entry<String, TreeMap<String, TreeSet<Integer>>> entry) {
 		ArrayList<WriteObject> list = new ArrayList<WriteObject>();
-		HashMap<String, TreeSet<Integer>> nestedMap = (HashMap<String, TreeSet<Integer>>) entry.getValue();
+		TreeMap<String, TreeSet<Integer>> nestedMap = (TreeMap<String, TreeSet<Integer>>) entry.getValue();
 		Iterator<Entry<String, TreeSet<Integer>>> it2 = nestedMap.entrySet().iterator();
 		while(it2.hasNext()) {
 			Entry<String, TreeSet<Integer>> entry2 = it2.next();
@@ -57,5 +112,19 @@ public class SearchResults {
 			list.add(obj);
 		}
 		return list;
+	}
+	
+	/**
+	 * Used to call the writeResults method
+	 * from within my JSONWriter class.
+	 * 
+	 * @param the output path to be written to
+	 */
+	public void toJSON(Path path) {
+		try {
+			JSONWriter.writeResults(this.results, path);
+		} catch (IOException e) {
+			System.out.println("Unable to write the JSON file to the output path");
+		}
 	}
 }
