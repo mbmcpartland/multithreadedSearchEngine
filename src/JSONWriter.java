@@ -3,7 +3,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -96,15 +98,89 @@ public class JSONWriter {
 			writer.write(indent(3));
 		}
 	}
-		
+	
+	/**
+	 * Used to write the search results to the
+	 * provided output path.
+	 * 
+	 * @param SearchResult object that contains the
+	 *        results of searching for the query
+	 * @param output path to write to
+	 */
+	public static void writeResults(TreeMap<String, TreeMap<String, TreeSet<Integer>>> results, Path path) throws IOException {
+		try(BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+			writer.write("[");
+			writer.write(System.lineSeparator());
+			Iterator<Entry<String, TreeMap<String, TreeSet<Integer>>>> it1 = results.entrySet().iterator();
+			while(it1.hasNext()) {
+				writer.write(indent(1));
+				writer.write("{");
+				writer.write(System.lineSeparator());
+				writer.write(indent(2));
+				Entry<String, TreeMap<String, TreeSet<Integer>>> entry = (Entry<String, TreeMap<String, TreeSet<Integer>>>) it1.next();
+				String query = entry.getKey().toString();
+				writer.write("\"queries\": " + "\"" + query + "\",");
+				writer.write(System.lineSeparator());
+				writer.write(indent(2));
+				writer.write("\"results\": [");
+				writer.write(System.lineSeparator());
+				writeAdditional(entry, writer);
+				writer.write(indent(2));
+				writer.write("]");
+				writer.write(System.lineSeparator());
+				writer.write(indent(1));
+				writer.write("}");
+				if(it1.hasNext()) {
+					writer.write(",");
+				}
+				writer.write(System.lineSeparator());
+			}	
+			writer.write("]");
+			writer.flush();
+		}
+	}
+	
+	/**
+	 * Used to write the rest of the search results
+	 * information that writeResults doesn't write.
+	 * 
+	 * @param Entry of the search word, with the files
+	 *        it was found in and the positions
+	 * @param BufferedWriter to write to the output file
+	 */
+	public static void writeAdditional(Entry<String, TreeMap<String, TreeSet<Integer>>> entry, BufferedWriter writer) throws IOException {
+		ArrayList<WriteObject> resultObjects = SearchResults.getWriteObj(entry);
+		Collections.sort(resultObjects, WriteObject.COUNT_COMPARATOR);
+		int i = 0;
+		for(WriteObject obj : resultObjects) {
+			i++;
+			writer.write(indent(3));
+			writer.write("{");
+			writer.write(System.lineSeparator());
+			writer.write(indent(4));
+			writer.write("\"where\": \"" + obj.getQuery() + "\",");
+			writer.write(System.lineSeparator());
+			writer.write(indent(4));
+			writer.write("\"count\": " + obj.getCount() + ",");
+			writer.write(System.lineSeparator());
+			writer.write(indent(4));
+			writer.write("\"index\": " + obj.getIndex());
+			writer.write(System.lineSeparator());
+			writer.write(indent(3));
+			writer.write("}");
+			if(i < resultObjects.size()) {
+				writer.write(",");
+			}
+			writer.write(System.lineSeparator());
+		}
+	}
+	
 	/**
 	 * This function was provided by Sophie
 	 * from the JSONWriter homework assignment.
 	 * It simply returns a String representation
 	 * of a certain number of indents.
-	 * 
-	 * @param number of indents that will be
-	 *        returned in a String
+	 * @param int (for the number of indents)
 	 */
 	public static String indent(int times) {
 		char[] tabs = new char[times];

@@ -44,5 +44,23 @@ public class Driver {
 			String outputPath = map.getString("-index", "index.json");
 			index.toJSON(Paths.get(outputPath));
 		}
+		
+		Queries theQueries = new Queries();
+		if(map.hasFlag("-query")) {
+			if(map.getString("-query") != null) {
+				try {
+					theQueries.readQueryFile(Paths.get(map.getString("-query")));
+				} catch (IOException e) {
+					System.out.println("Unable to read the Query file");
+				}
+			}
+		}
+		
+		if(map.hasFlag("-results")) {
+			SearchResults results = new SearchResults();
+			theQueries.Finder(index, results, map.hasFlag("-exact"));
+			String resultsPath = map.getString("-results", "results.json");
+			results.toJSON(Paths.get(resultsPath));
+		}
 	}
 }

@@ -1,7 +1,9 @@
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 /**
  * Stores an inverted index of words to paths to positions within those paths
@@ -154,5 +156,63 @@ public class InvertedIndex {
 			this.add(word, position, path);
 			position++;
 		}
+	}
+	
+	/**
+	 * Used to iterate through the InvertedIndex, searching
+	 * for the word(s) in the query.
+	 * 
+	 * @param SearchResults object that is used to store
+	 *        the found word(s), positions, and files.
+	 * @param Array of words from the query
+	 * @param Boolean signifying whether this is a
+	 *        partial search or an exact search
+	 */
+	public void QueryFinder(SearchResults results, String[] words, boolean partial) {
+		Iterator<Entry<String, TreeMap<String, TreeSet<Integer>>>> it1 = this.index.entrySet().iterator();
+		String proper = getProperName(words);
+		int found = 0;
+		while(it1.hasNext()) {
+			Entry<String, TreeMap<String, TreeSet<Integer>>> entry = (Entry<String, TreeMap<String, TreeSet<Integer>>>) it1.next();
+			String word = entry.getKey();
+			for(int i = 0 ; i < words.length ; i++) {
+				if(word.startsWith(words[i])) {
+					if(partial == false) {
+						found = 1;
+						TreeMap<String, TreeSet<Integer>> nestedMap = entry.getValue();
+						Iterator<Entry<String, TreeSet<Integer>>> it2 = nestedMap.entrySet().iterator();
+						results.addResult(proper, it2);
+					} else {
+						if(word.equals(words[i])) {
+							found = 1;
+							TreeMap<String, TreeSet<Integer>> nestedMap = entry.getValue();
+							Iterator<Entry<String, TreeSet<Integer>>> it2 = nestedMap.entrySet().iterator();
+							results.addResult(proper, it2);
+						}
+					}
+				}
+			}
+		}
+		if(found == 0 && proper.length() > 0) {
+			results.add(proper);
+		}
+	}
+	
+	/**
+	 * Simple method to remove white space at end of
+	 * a provided query.
+	 * 
+	 * @param the words in the query
+	 */
+	public static String getProperName(String[] words) {
+		StringBuilder proper = new StringBuilder();
+		for(int i = 0 ; i < words.length ; i++) {
+			proper.append(words[i]);
+			proper.append(" ");
+		}
+		if(proper.length() != 0) {
+			proper.deleteCharAt(proper.length() - 1);
+		}
+		return proper.toString();
 	}
 }
