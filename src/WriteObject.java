@@ -1,5 +1,7 @@
 import java.util.Comparator;
 
+// TODO Refactor to SearchResult
+
 /**
  * The purpose of this class is to make
  * sure that the files and positions are
@@ -51,6 +53,12 @@ public class WriteObject implements Comparable<WriteObject> {
 		return this.index;
 	}
 	
+	// TODO Add some setters here so we can update this object's values
+	// addCount(int count) where we add this count plus a new count
+	// updateIndex(int index) changes to the min of this index and the new index
+	
+	
+	// TODO Remove
 	/**
 	 * Comparator object that is used to compare
 	 * the counts for two WriteObjects.
@@ -70,6 +78,7 @@ public class WriteObject implements Comparable<WriteObject> {
 		}
 	};
 	
+	// TODO Remove
 	/**
 	 * Comparator object that is used to compare
 	 * the first index of two WriteObjects.
@@ -86,6 +95,7 @@ public class WriteObject implements Comparable<WriteObject> {
 		}
 	};
 
+	// TODO Have a single compareTo method that does all of the comparison necessary
 	/**
 	 * Keeps the natural ordering if the first
 	 * index is the same for two WriteObjects.

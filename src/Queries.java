@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+// TODO Combine Queries and SearchResults into a single QueryHelper or QueryParser class
+
 /**
  * This class is used to form all of the
  * queries that are in the query file.
@@ -16,6 +18,33 @@ import java.util.List;
  * @author mitchellmcpartland
  */
 public class Queries {
+	
+	/*
+	private final TreeMap<String, ArrayList<WriteObject>> results;
+	private final InvertedIndex index;
+	
+	public QueryHelper(InvertedIndex index) {
+		this.results = ???
+		this.index = index;
+	}
+
+	public void parseQueries(Path path, boolean exact) {
+		open up the file
+		for every line in the file
+			String[] words = WordParser.parseWords(line);
+			Arrays.sort(words);
+			line = String.join(" ", words);
+			
+			results.put(line, index.search(words, exact));
+		
+	}
+	
+	public void toJSON(Path path) {
+	
+	}
+	 */
+	
+	
 	
 	private final ArrayList<String> queries;
 	

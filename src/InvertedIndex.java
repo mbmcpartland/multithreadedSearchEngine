@@ -158,6 +158,40 @@ public class InvertedIndex {
 		}
 	}
 	
+	/* TODO
+	public List<WriteObject> search(String[] words, boolean partial) {
+		if (partial) {
+			return partialSearch(words);
+		}
+		else {
+			return exactSearch(words);
+		}
+	}
+	
+	public List<WriteObject> exactSearch(String[] words) {
+	
+		List<WriteObject> resultList = ????;
+		Map<String, WriteObject> resultMap = ???;
+	
+		for word in words:
+			if (index.containsKey(word)) {
+			
+				for every path in index.get(word).keySet()
+					
+					if this is a new path (if resultMap does not containskey path)
+						add a new search result to the list AND the map
+					
+					else
+						get the search result from the list for this path (resultMap.get())
+						update that search result's index and count
+			}
+	
+	
+		Collections.sort(resultList);
+		return resultList;	
+	}
+	*/
+	
 	/**
 	 * Used to iterate through the InvertedIndex, searching
 	 * for the word(s) in the query.
@@ -198,6 +232,8 @@ public class InvertedIndex {
 		}
 	}
 	
+	// TODO Shouldn't need
+	// TODO String.join(" ", words);
 	/**
 	 * Simple method to remove white space at end of
 	 * a provided query.
