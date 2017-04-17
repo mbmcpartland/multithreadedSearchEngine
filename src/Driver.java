@@ -45,11 +45,11 @@ public class Driver {
 			index.toJSON(Paths.get(outputPath));
 		}
 		
-		Queries theQueries = new Queries();
+		QueryHelper theQueries = new QueryHelper(index);
 		if(map.hasFlag("-query")) {
 			if(map.getString("-query") != null) {
 				try {
-					theQueries.readQueryFile(Paths.get(map.getString("-query")));
+					theQueries.parseQueries(Paths.get(map.getString("-query")), map.hasFlag("-exact"));
 				} catch (IOException e) {
 					System.out.println("Unable to read the Query file");
 				}
@@ -57,10 +57,8 @@ public class Driver {
 		}
 		
 		if(map.hasFlag("-results")) {
-			SearchResults results = new SearchResults();
-			theQueries.Finder(index, results, map.hasFlag("-exact"));
 			String resultsPath = map.getString("-results", "results.json");
-			results.toJSON(Paths.get(resultsPath));
+			theQueries.toJSON(Paths.get(resultsPath));
 		}
 	}
 }

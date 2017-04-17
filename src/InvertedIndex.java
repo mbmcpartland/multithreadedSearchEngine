@@ -1,9 +1,11 @@
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Stores an inverted index of words to paths to positions within those paths
@@ -130,6 +132,22 @@ public class InvertedIndex {
 	}
 	
 	/**
+	 * Returns the lowest position for a given word and path.
+	 * 
+	 * @param the word that has the path
+	 * @param the path in which the lowest index is returned
+	 */
+	public int getLowestIndex(String word, String path) {
+		if(this.contains(word, path) == true) {
+			TreeMap<String, TreeSet<Integer>> nested = this.index.get(word);
+			TreeSet<Integer> set = nested.get(path);
+			return set.first();
+		} else {
+			return 0;
+		}
+	}
+	
+	/**
 	 * Used to write to the output JSON file.
 	 * 
 	 * @param the output path that will be written to
@@ -158,97 +176,123 @@ public class InvertedIndex {
 		}
 	}
 	
-	/* TODO
-	public List<WriteObject> search(String[] words, boolean partial) {
-		if (partial) {
+	/**
+	 * Search method that calls partialSearch or exactSearch.
+	 * 
+	 * @param the words in the query
+	 * @param boolean indicating a partial or exact search
+	 */
+	public ArrayList<SearchResult> search(String[] words, boolean exact) {
+		if(exact == false) {
 			return partialSearch(words);
-		}
-		else {
+		} else {
 			return exactSearch(words);
 		}
 	}
 	
-	public List<WriteObject> exactSearch(String[] words) {
+	/**
+	 * Search method used to do "exact searching" in the
+	 * InvertedIndex. An ArrayList of SearchResults is
+	 * returned, which contains the exact search results.
+	 * 
+	 * @param the words in the query
+	 */
+	public ArrayList<SearchResult> exactSearch(String[] words) {
+		ArrayList<SearchResult> resultList = new ArrayList<>();
+		HashMap<String, SearchResult> resultMap = new HashMap<>();
 	
-		List<WriteObject> resultList = ????;
-		Map<String, WriteObject> resultMap = ???;
-	
-		for word in words:
-			if (index.containsKey(word)) {
-			
-				for every path in index.get(word).keySet()
-					
-					if this is a new path (if resultMap does not containskey path)
-						add a new search result to the list AND the map
-					
-					else
-						get the search result from the list for this path (resultMap.get())
-						update that search result's index and count
+		for(int i = 0 ; i < words.length ; i++) {
+			if(this.index.containsKey(words[i])) {
+				for(String path : index.get(words[i]).keySet()) {
+					if(!(resultMap.containsKey(path))) {
+						int count = this.count(words[i], path);
+						int lowestIndex = this.getLowestIndex(words[i], path);
+						SearchResult result = new SearchResult(path, count, lowestIndex);
+						resultList.add(result);
+						resultMap.put(path, result);
+					} else {
+						SearchResult result = resultMap.get(path);
+						int count = this.count(words[i], path);
+						int lowestIndex = this.getLowestIndex(words[i], path);
+						result.addCount(count);
+						result.updateIndex(lowestIndex);
+						resultMap.put(path, result);
+					}
+				}
 			}
-	
-	
+		}
 		Collections.sort(resultList);
 		return resultList;	
 	}
-	*/
 	
 	/**
-	 * Used to iterate through the InvertedIndex, searching
-	 * for the word(s) in the query.
+	 * Contains method that checks the InvertedIndex
+	 * to see if the index contains words that would
+	 * count as a "partial match".
 	 * 
-	 * @param SearchResults object that is used to store
-	 *        the found word(s), positions, and files.
-	 * @param Array of words from the query
-	 * @param Boolean signifying whether this is a
-	 *        partial search or an exact search
+	 * @param the word being matched against
 	 */
-	public void QueryFinder(SearchResults results, String[] words, boolean partial) {
-		Iterator<Entry<String, TreeMap<String, TreeSet<Integer>>>> it1 = this.index.entrySet().iterator();
-		String proper = getProperName(words);
-		int found = 0;
-		while(it1.hasNext()) {
-			Entry<String, TreeMap<String, TreeSet<Integer>>> entry = (Entry<String, TreeMap<String, TreeSet<Integer>>>) it1.next();
-			String word = entry.getKey();
-			for(int i = 0 ; i < words.length ; i++) {
-				if(word.startsWith(words[i])) {
-					if(partial == false) {
-						found = 1;
-						TreeMap<String, TreeSet<Integer>> nestedMap = entry.getValue();
-						Iterator<Entry<String, TreeSet<Integer>>> it2 = nestedMap.entrySet().iterator();
-						results.addResult(proper, it2);
-					} else {
-						if(word.equals(words[i])) {
-							found = 1;
-							TreeMap<String, TreeSet<Integer>> nestedMap = entry.getValue();
-							Iterator<Entry<String, TreeSet<Integer>>> it2 = nestedMap.entrySet().iterator();
-							results.addResult(proper, it2);
+	public boolean containsPartial(String word) {
+		Set<String> words = this.index.keySet();
+		for(String theWord : words) {
+			if(theWord.startsWith(word)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Returns an ArrayList of words in the InvertedIndex
+	 * that start with the "partial search word".
+	 * 
+	 * @param the word being matched against
+	 */
+	public ArrayList<String> partialWords(String word) {
+		ArrayList<String> partials = new ArrayList<>();
+		Set<String> words = this.index.keySet();
+		for(String theWord : words) {
+			if(theWord.startsWith(word)) {
+				partials.add(theWord);
+			}
+		}
+		return partials;
+	}
+	
+	/**
+	 * Search method used to do "exact searching" in the
+	 * InvertedIndex. An ArrayList of SearchResults is
+	 * returned, which contains the partial search results.
+	 * 
+	 * @param the words in the query
+	 */
+	public ArrayList<SearchResult> partialSearch(String[] words) {
+		ArrayList<SearchResult> resultList = new ArrayList<>();
+		HashMap<String, SearchResult> resultMap = new HashMap<>();
+		for(int i = 0 ; i < words.length ; i++) {
+			if(this.containsPartial(words[i])) {
+				ArrayList<String> partials = partialWords(words[i]);
+				for(int x = 0 ; x < partials.size() ; x++) {
+					for(String path : index.get(partials.get(x)).keySet()) {
+						if(!(resultMap.containsKey(path))) {
+							int count = this.count(partials.get(x), path);
+							int lowestIndex = this.getLowestIndex(partials.get(x), path);
+							SearchResult result = new SearchResult(path, count, lowestIndex);
+							resultList.add(result);
+							resultMap.put(path, result);
+						} else {
+							SearchResult result = resultMap.get(path);
+							int count = this.count(partials.get(x), path);
+							int lowestIndex = this.getLowestIndex(partials.get(x), path);
+							result.addCount(count);
+							result.updateIndex(lowestIndex);
+							resultMap.put(path, result);
 						}
 					}
 				}
 			}
 		}
-		if(found == 0 && proper.length() > 0) {
-			results.add(proper);
-		}
-	}
-	
-	// TODO Shouldn't need
-	// TODO String.join(" ", words);
-	/**
-	 * Simple method to remove white space at end of
-	 * a provided query.
-	 * 
-	 * @param the words in the query
-	 */
-	public static String getProperName(String[] words) {
-		StringBuilder proper = new StringBuilder();
-		for(int i = 0 ; i < words.length ; i++) {
-			proper.append(words[i]);
-			proper.append(" ");
-		}
-		if(proper.length() != 0) {
-			proper.deleteCharAt(proper.length() - 1);
-		}
-		return proper.toString();
+		Collections.sort(resultList);
+		return resultList;	
 	}
 }

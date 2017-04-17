@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -103,34 +102,35 @@ public class JSONWriter {
 	 * Used to write the search results to the
 	 * provided output path.
 	 * 
-	 * @param SearchResult object that contains the
+	 * @param QueryHelper object that contains the
 	 *        results of searching for the query
 	 * @param output path to write to
 	 */
-	public static void writeResults(TreeMap<String, TreeMap<String, TreeSet<Integer>>> results, Path path) throws IOException {
+	public static void writeResults(TreeMap<String, ArrayList<SearchResult>> results, Path path) throws IOException {
 		try(BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			writer.write("[");
 			writer.write(System.lineSeparator());
-			Iterator<Entry<String, TreeMap<String, TreeSet<Integer>>>> it1 = results.entrySet().iterator();
-			while(it1.hasNext()) {
+			Iterator<Entry<String, ArrayList<SearchResult>>> iterator = results.entrySet().iterator();
+			while(iterator.hasNext()) {
 				writer.write(indent(1));
 				writer.write("{");
 				writer.write(System.lineSeparator());
 				writer.write(indent(2));
-				Entry<String, TreeMap<String, TreeSet<Integer>>> entry = (Entry<String, TreeMap<String, TreeSet<Integer>>>) it1.next();
+				Entry<String, ArrayList<SearchResult>> entry = iterator.next();
 				String query = entry.getKey().toString();
 				writer.write("\"queries\": " + "\"" + query + "\",");
 				writer.write(System.lineSeparator());
 				writer.write(indent(2));
 				writer.write("\"results\": [");
 				writer.write(System.lineSeparator());
-				writeAdditional(entry, writer);
+				ArrayList<SearchResult> resultObjects = entry.getValue();
+				writeAdditional(resultObjects, writer);
 				writer.write(indent(2));
 				writer.write("]");
 				writer.write(System.lineSeparator());
 				writer.write(indent(1));
 				writer.write("}");
-				if(it1.hasNext()) {
+				if(iterator.hasNext()) {
 					writer.write(",");
 				}
 				writer.write(System.lineSeparator());
@@ -138,27 +138,26 @@ public class JSONWriter {
 			writer.write("]");
 			writer.flush();
 		}
+				
 	}
 	
 	/**
-	 * Used to write the rest of the search results
-	 * information that writeResults doesn't write.
+	 * Used to iterate through the ArrayList of
+	 * SearchResults, and then outputting them
+	 * to the JSON file using the BufferedWriter.
 	 * 
-	 * @param Entry of the search word, with the files
-	 *        it was found in and the positions
-	 * @param BufferedWriter to write to the output file
+	 * @param ArrayList of SearchResults
+	 * @param BufferedWriter for writing results
 	 */
-	public static void writeAdditional(Entry<String, TreeMap<String, TreeSet<Integer>>> entry, BufferedWriter writer) throws IOException {
-		ArrayList<WriteObject> resultObjects = SearchResults.getWriteObj(entry);
-		Collections.sort(resultObjects, WriteObject.COUNT_COMPARATOR);
+	public static void writeAdditional(ArrayList<SearchResult> resultObjects, BufferedWriter writer) throws IOException {
 		int i = 0;
-		for(WriteObject obj : resultObjects) {
+		for(SearchResult obj : resultObjects) {
 			i++;
 			writer.write(indent(3));
 			writer.write("{");
 			writer.write(System.lineSeparator());
 			writer.write(indent(4));
-			writer.write("\"where\": \"" + obj.getQuery() + "\",");
+			writer.write("\"where\": \"" + obj.getPath() + "\",");
 			writer.write(System.lineSeparator());
 			writer.write(indent(4));
 			writer.write("\"count\": " + obj.getCount() + ",");
