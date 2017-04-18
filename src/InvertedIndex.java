@@ -5,6 +5,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Set;
 
 /**
@@ -15,6 +19,7 @@ import java.util.Set;
  */
 public class InvertedIndex {
 
+	public static final Logger log = LogManager.getLogger();
 	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> index;
 	
 	/**
