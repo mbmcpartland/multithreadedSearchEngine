@@ -201,10 +201,18 @@ public class InvertedIndex {
 		ArrayList<SearchResult> resultList = new ArrayList<>();
 		HashMap<String, SearchResult> resultMap = new HashMap<>();
 	
+		// TODO for (String word : words)
 		for(int i = 0 ; i < words.length ; i++) {
 			if(this.index.containsKey(words[i])) {
+				// TODO This code should be the same for both exact and partial search
+				// TODO Move this into a private void searchHelper(String key, HashMap<String, SearchResult> resultMap, ArrayList<SearchResult> resultList)
+				// TODO And call the searchHelper in both search methods
 				for(String path : index.get(words[i]).keySet()) {
+					// TODO create and set count and lowestIndex here 
+					
 					if(!(resultMap.containsKey(path))) {
+						// TODO A little more efficient to do this: int count = index.get(words[i]).get(path).size();
+						// TODO int lowestIndex = index.get(words[i]).get(path).first();
 						int count = this.count(words[i], path);
 						int lowestIndex = this.getLowestIndex(words[i], path);
 						SearchResult result = new SearchResult(path, count, lowestIndex);
@@ -212,19 +220,23 @@ public class InvertedIndex {
 						resultMap.put(path, result);
 					} else {
 						SearchResult result = resultMap.get(path);
+						// TODO Same comment for count/index
 						int count = this.count(words[i], path);
 						int lowestIndex = this.getLowestIndex(words[i], path);
 						result.addCount(count);
 						result.updateIndex(lowestIndex);
-						resultMap.put(path, result);
+						resultMap.put(path, result); // TODO Don't need because your results are mutable
 					}
 				}
 			}
 		}
+		
 		Collections.sort(resultList);
 		return resultList;	
 	}
 	
+	
+	// TODO Either remove, or keep  but don't use
 	/**
 	 * Contains method that checks the InvertedIndex
 	 * to see if the index contains words that would
@@ -269,6 +281,20 @@ public class InvertedIndex {
 	public ArrayList<SearchResult> partialSearch(String[] words) {
 		ArrayList<SearchResult> resultList = new ArrayList<>();
 		HashMap<String, SearchResult> resultMap = new HashMap<>();
+		
+		/*
+		for word in words:
+		    look at: https://github.com/usf-cs212-2017/lectures/blob/master/Data%20Structures/src/FindDemo.java#L144
+		    use instead of tailSet, use tailMap.keySet
+			for every key that starts with our query in index
+				if (key.startsWith(word)) {
+					searchHelper(key, resultMap, resultList);
+				}
+				else break
+		 */
+		
+		
+		
 		for(int i = 0 ; i < words.length ; i++) {
 			if(this.containsPartial(words[i])) {
 				ArrayList<String> partials = partialWords(words[i]);
