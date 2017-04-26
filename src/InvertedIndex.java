@@ -6,11 +6,6 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.util.Set;
-
 /**
  * Stores an inverted index of words to paths to positions within those paths
  * the words were found.
@@ -19,7 +14,6 @@ import java.util.Set;
  */
 public class InvertedIndex {
 
-	public static final Logger log = LogManager.getLogger();
 	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> index;
 	
 	/**
@@ -27,23 +21,6 @@ public class InvertedIndex {
 	 */
 	public InvertedIndex() {
 		this.index = new TreeMap<>();
-	}
-
-	/**
-	 * Adds the word, position, and path to the inverted index.
-	 * 
-	 * @param word the word to add
-	 * @param position the position at the path the word was found
-	 * @param path the path the word was found
-	 */
-	public void add(String word, int position, String path) {
-		if(!this.index.containsKey(word)) {
-			this.index.put(word, new TreeMap<>());
-		}
-		if(!this.index.get(word).containsKey(path)) {
-			this.index.get(word).put(path, new TreeSet<>());
-		}
-		this.index.get(word).get(path).add(position);
 	}
 	
 	/**
@@ -176,7 +153,14 @@ public class InvertedIndex {
 	public void addAll(String[] words, String path) { 
 		int position = 1;
 		for(String word : words) {
-			this.add(word, position, path);
+			if(!this.index.containsKey(word)) {
+				this.index.put(word, new TreeMap<>());
+			}
+			if(!this.index.get(word).containsKey(path)) {
+				this.index.get(word).put(path, new TreeSet<>());
+			}
+			this.index.get(word).get(path).add(position);
+
 			position++;
 		}
 	}
@@ -205,63 +189,15 @@ public class InvertedIndex {
 	public ArrayList<SearchResult> exactSearch(String[] words) {
 		ArrayList<SearchResult> resultList = new ArrayList<>();
 		HashMap<String, SearchResult> resultMap = new HashMap<>();
-	
-		for(int i = 0 ; i < words.length ; i++) {
-			if(this.index.containsKey(words[i])) {
-				for(String path : index.get(words[i]).keySet()) {
-					if(!(resultMap.containsKey(path))) {
-						int count = this.count(words[i], path);
-						int lowestIndex = this.getLowestIndex(words[i], path);
-						SearchResult result = new SearchResult(path, count, lowestIndex);
-						resultList.add(result);
-						resultMap.put(path, result);
-					} else {
-						SearchResult result = resultMap.get(path);
-						int count = this.count(words[i], path);
-						int lowestIndex = this.getLowestIndex(words[i], path);
-						result.addCount(count);
-						result.updateIndex(lowestIndex);
-						resultMap.put(path, result);
-					}
-				}
+		
+		for(String word : words) {
+			if(this.index.containsKey(word)) {
+				searchHelper(word, resultMap, resultList);
 			}
 		}
+		
 		Collections.sort(resultList);
 		return resultList;	
-	}
-	
-	/**
-	 * Contains method that checks the InvertedIndex
-	 * to see if the index contains words that would
-	 * count as a "partial match".
-	 * 
-	 * @param the word being matched against
-	 */
-	public boolean containsPartial(String word) {
-		Set<String> words = this.index.keySet();
-		for(String theWord : words) {
-			if(theWord.startsWith(word)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * Returns an ArrayList of words in the InvertedIndex
-	 * that start with the "partial search word".
-	 * 
-	 * @param the word being matched against
-	 */
-	public ArrayList<String> partialWords(String word) {
-		ArrayList<String> partials = new ArrayList<>();
-		Set<String> words = this.index.keySet();
-		for(String theWord : words) {
-			if(theWord.startsWith(word)) {
-				partials.add(theWord);
-			}
-		}
-		return partials;
 	}
 	
 	/**
@@ -274,30 +210,42 @@ public class InvertedIndex {
 	public ArrayList<SearchResult> partialSearch(String[] words) {
 		ArrayList<SearchResult> resultList = new ArrayList<>();
 		HashMap<String, SearchResult> resultMap = new HashMap<>();
-		for(int i = 0 ; i < words.length ; i++) {
-			if(this.containsPartial(words[i])) {
-				ArrayList<String> partials = partialWords(words[i]);
-				for(int x = 0 ; x < partials.size() ; x++) {
-					for(String path : index.get(partials.get(x)).keySet()) {
-						if(!(resultMap.containsKey(path))) {
-							int count = this.count(partials.get(x), path);
-							int lowestIndex = this.getLowestIndex(partials.get(x), path);
-							SearchResult result = new SearchResult(path, count, lowestIndex);
-							resultList.add(result);
-							resultMap.put(path, result);
-						} else {
-							SearchResult result = resultMap.get(path);
-							int count = this.count(partials.get(x), path);
-							int lowestIndex = this.getLowestIndex(partials.get(x), path);
-							result.addCount(count);
-							result.updateIndex(lowestIndex);
-							resultMap.put(path, result);
-						}
-					}
+		
+		for(String word : words) {
+			for(String key : this.index.tailMap(word).keySet()) {
+				if(key.startsWith(word)) {
+					searchHelper(key, resultMap, resultList);
 				}
 			}
 		}
+		
 		Collections.sort(resultList);
 		return resultList;	
+	}
+	
+	/**
+	 * Search method used to do "exact searching" in the
+	 * InvertedIndex. An ArrayList of SearchResults is
+	 * returned, which contains the partial search results.
+	 * 
+	 * @param the word being searched for
+	 * @param the map which maps the search word with its
+	 * 		  associated SearchResult object
+	 * @param the ArrayList of SearchResult objects
+	 */
+	private void searchHelper(String key, HashMap<String, SearchResult> resultMap, ArrayList<SearchResult> resultList) {
+		for(String path : index.get(key).keySet()) {
+			int count = this.index.get(key).get(path).size();
+			int lowestIndex = this.index.get(key).get(path).first();
+			if(!(resultMap.containsKey(path))) {
+				SearchResult result = new SearchResult(path, count, lowestIndex);
+				resultList.add(result);
+				resultMap.put(path, result);
+			} else {
+				SearchResult result = resultMap.get(path);
+				result.addCount(count);
+				result.updateIndex(lowestIndex);
+			}
+		}
 	}
 }

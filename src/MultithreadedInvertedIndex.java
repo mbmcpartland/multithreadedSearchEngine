@@ -7,23 +7,14 @@ import org.apache.logging.log4j.Logger;
 public class MultithreadedInvertedIndex extends InvertedIndex {
 	
 	public static final Logger log = LogManager.getLogger();
+	private CustomLock lock;
 	
 	/**
 	 * Initializes the inverted index.
 	 */
 	public MultithreadedInvertedIndex() {
 		super();
-	}
-
-	/**
-	 * Adds the word, position, and path to the inverted index.
-	 * 
-	 * @param word the word to add
-	 * @param position the position at the path the word was found
-	 * @param path the path the word was found
-	 */
-	public synchronized void add(String word, int position, String path) {
-		super.add(word, position, path);
+		lock = new CustomLock();
 	}
 	
 	/**
@@ -31,8 +22,14 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 	 * 
 	 */
 	@Override
-	public synchronized String toString() {
-		return super.toString();
+	public String toString() {
+		lock.lockReadOnly();
+		try {
+			return super.toString();
+		}
+		finally {
+			lock.unlockReadOnly();
+		}
 	}
 	
 	/**
@@ -40,8 +37,14 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 	 * 
 	 * @param the word that the user wants to know if the index contains
 	 */
-	public synchronized boolean contains(String word) {
-		return super.contains(word);
+	public boolean contains(String word) {
+		lock.lockReadOnly();
+		try {
+			return super.contains(word);
+		}
+		finally {
+			lock.unlockReadOnly();
+		}
 	}
 	
 	/**
@@ -51,8 +54,14 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 	 * @param the word that may have the path
 	 * @param path that the user wants to know if the index contains
 	 */
-	public synchronized boolean contains(String word, String path) {
-		return super.contains(word, path);
+	public boolean contains(String word, String path) {
+		lock.lockReadOnly();
+		try {
+			return super.contains(word, path);
+		}
+		finally {
+			lock.unlockReadOnly();
+		}
 	}
 	
 	/**
@@ -63,16 +72,28 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 	 * @param the path that may have the position
 	 * @param position that the user wants to know if the index contains
 	 */
-	public synchronized boolean contains(String word, String path, int position) {
-		return super.contains(word, path, position);
+	public boolean contains(String word, String path, int position) {
+		lock.lockReadOnly();
+		try {
+			return super.contains(word, path, position);
+		}
+		finally {
+			lock.unlockReadOnly();
+		}
 	}
 	
 	/**
 	 * Returns the number of words in the inverted index.
 	 * 
 	 */
-	public synchronized int count() {
-		return super.count();
+	public int count() {
+		lock.lockReadOnly();
+		try {
+			return super.count();
+		}
+		finally {
+			lock.unlockReadOnly();
+		}
 	}
 	
 	/**
@@ -80,8 +101,14 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 	 * 
 	 * @param the word in which the number of paths is returned
 	 */
-	public synchronized int count(String word) {
-		return super.count(word);
+	public int count(String word) {
+		lock.lockReadOnly();
+		try {
+			return super.count(word);
+		}
+		finally {
+			lock.unlockReadOnly();
+		}
 	}
 	
 	/**
@@ -91,8 +118,14 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 	 * @param the word that has the path
 	 * @param the path in which the number of positions is returned
 	 */
-	public synchronized int count(String word, String path) {
-		return super.count(word, path);
+	public int count(String word, String path) {
+		lock.lockReadOnly();
+		try {
+			return super.count(word, path);
+		}
+		finally {
+			lock.unlockReadOnly();
+		}
 	}
 	
 	/**
@@ -100,8 +133,14 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 	 * 
 	 * @param the output path that will be written to
 	 */
-	public synchronized void toJSON(Path path) {
-		super.toJSON(path);
+	public void toJSON(Path path) {
+		lock.lockReadOnly();
+		try {
+			super.toJSON(path);
+		}
+		finally {
+			lock.unlockReadOnly();
+		}
 	}
 	
 	/**
@@ -112,27 +151,43 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 	 *        and added to the index
 	 * @param the path that contained the words
 	 */
-	public synchronized void addAll(String[] words, String path) { 
-		super.addAll(words, path);
+	public void addAll(String[] words, String path) { 
+		lock.lockReadWrite();
+		try {
+			super.addAll(words, path);
+		}
+		finally {
+			lock.unlockReadWrite();
+		}
 	}
 	
-	public synchronized ArrayList<SearchResult> search(String[] words, boolean exact) {
-		return super.search(words, exact);
+	public ArrayList<SearchResult> search(String[] words, boolean exact) {
+		lock.lockReadOnly();
+		try {
+			return super.search(words, exact);
+		}
+		finally {
+			lock.unlockReadOnly();
+		}
 	}
 	
-	public synchronized ArrayList<SearchResult> exactSearch(String[] words) {
-		return super.exactSearch(words);
+	public ArrayList<SearchResult> exactSearch(String[] words) {
+		lock.lockReadOnly();
+		try {
+			return super.exactSearch(words);
+		}
+		finally {
+			lock.unlockReadOnly();
+		}
 	}
 	
-	public synchronized boolean containsPartial(String word) {
-		return super.containsPartial(word);
-	}
-	
-	public synchronized ArrayList<String> partialWords(String word) {
-		return super.partialWords(word);
-	}
-	
-	public synchronized ArrayList<SearchResult> partialSearch(String[] words) {
-		return super.partialSearch(words);
+	public ArrayList<SearchResult> partialSearch(String[] words) {
+		lock.lockReadOnly();
+		try {
+			return super.partialSearch(words);
+		}
+		finally {
+			lock.unlockReadOnly();
+		}
 	}
 }
