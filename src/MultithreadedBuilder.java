@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+// TODO Javadoc
+
 public class MultithreadedBuilder {
 	
 	public static final Logger log = LogManager.getLogger();
@@ -35,7 +37,9 @@ public class MultithreadedBuilder {
 		
 		@Override
 		public void run() {
-			synchronized(index) {
+			// TODO InvertedIndexBuilder.buildFromHTML(path, index)
+			
+			synchronized(index) { // TODO Also wouldn't synchronize here because your index is already thread-safe
 				StringBuilder html = new StringBuilder();
 				try(BufferedReader reader = Files.newBufferedReader(this.path, StandardCharsets.UTF_8)) {
 					for(String x = reader.readLine(); x != null ; x = reader.readLine()) {

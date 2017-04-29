@@ -3,6 +3,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+// TODO Merge project 3 into your master branch.
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,6 +24,36 @@ public class Driver {
 	 * @param args
 	 */
 	public static void main(String[] args) throws IOException {
+		/*
+		 * TODO
+		 * 
+		 * ArgumentMap map = ...
+		 * 
+		 * InvertedIndex index = null;
+		 * QueryHelperInterface query = null;
+		 * 
+		 * 
+		 * if (-threads) {
+		 * 		MultithreadedInvertedIndex threaded = new Multi...
+		 * 		index = threaded;
+		 * 		query = new MultithreadedQueryHelper(threaded);
+		 * 
+		 * }
+		 * else {
+		 * 		index = new InvertedIndex();
+		 * 		query = new QueryHelper(index);
+		 * }
+		 * 
+		 * if (-results) {
+		 * 	query.toJSON();
+		 * }
+		 * 
+		 * if (-index) {
+		 * 	index.toJSON();
+		 * }
+		 * 
+		 */
+		
 		
 		ArgumentMap map = new ArgumentMap(args);
 		InvertedIndex index = new InvertedIndex();

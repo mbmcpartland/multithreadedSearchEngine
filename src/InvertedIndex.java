@@ -29,7 +29,7 @@ public class InvertedIndex {
 	 */
 	@Override
 	public String toString() {
-		return this.toString();
+		return this.toString(); // TODO this.index.toString();
 	}
 	
 	/**
@@ -141,6 +141,26 @@ public class InvertedIndex {
 			System.out.println("Unable to write the JSON file to the output path");
 		}
 	}
+	
+	// TODO We still need an add() method without causing deadlock
+	/*
+	private void addHelper(String word, String path, int position) {
+		if(!this.index.containsKey(word)) {
+			this.index.put(word, new TreeMap<>());
+		}
+		if(!this.index.get(word).containsKey(path)) {
+			this.index.get(word).put(path, new TreeSet<>());
+		}
+		this.index.get(word).get(path).add(position);
+	}
+
+	public void add(String word, String path, int position) {
+		addHelper();
+	}
+	
+	Change addAll to also call addHelper() but NOT add()
+
+	 */
 	
 	/**
 	 * Used to add each word, along with the associated

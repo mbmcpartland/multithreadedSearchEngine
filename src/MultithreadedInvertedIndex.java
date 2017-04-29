@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 public class MultithreadedInvertedIndex extends InvertedIndex {
 	
 	public static final Logger log = LogManager.getLogger();
-	private CustomLock lock;
+	private CustomLock lock; // TODO final
 	
 	/**
 	 * Initializes the inverted index.
@@ -128,6 +128,8 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 	
+	// TODO Override getLowestIndex
+	
 	/**
 	 * Used to write to the output JSON file.
 	 * 
@@ -161,6 +163,7 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 	
+	// TODO Remove
 	public ArrayList<SearchResult> search(String[] words, boolean exact) {
 		lock.lockReadOnly();
 		try {
@@ -170,6 +173,9 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 			lock.unlockReadOnly();
 		}
 	}
+	
+	// TODO Use the override annotation, and skip the Javadoc unless something is different
+	
 	
 	public ArrayList<SearchResult> exactSearch(String[] words) {
 		lock.lockReadOnly();

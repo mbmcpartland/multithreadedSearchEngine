@@ -30,7 +30,7 @@ public class CustomLock {
 			try {
 				wait();
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				e.printStackTrace(); // TODO 
 			}
 		}
 		readers++;
@@ -43,7 +43,7 @@ public class CustomLock {
 	public synchronized void unlockReadOnly(){
 		readers--;
 		if (readers == 0) {
-			notifyAll();			
+			notifyAll();
 		}
 	}
 	
@@ -56,7 +56,7 @@ public class CustomLock {
 			try {
 				wait();
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				e.printStackTrace();  // TODO 
 			}
 		}
 		writers++;

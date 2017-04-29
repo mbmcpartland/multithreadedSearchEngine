@@ -88,9 +88,12 @@ public class WorkQueue {
 				}
 			}
 			catch (InterruptedException e) {
+				// TODO Thread.currentThread().interrupt();
 			}
 		}
 	}
+	
+	// TODO Javadoc
 	
 	private int getPending() {
 		synchronized(queue) {
@@ -101,6 +104,8 @@ public class WorkQueue {
 	private void incrementPending() {
 		synchronized(queue) {
 			pending++;
+			
+			// TODO Remove
 			if(getPending() <= 0) {
 				queue.notifyAll();
 			}
