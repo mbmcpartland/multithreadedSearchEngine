@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 public class MultithreadedInvertedIndex extends InvertedIndex {
 	
 	public static final Logger log = LogManager.getLogger();
-	private CustomLock lock; // TODO final
+	private final CustomLock lock;
 	
 	/**
 	 * Initializes the inverted index.
@@ -17,10 +17,6 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		lock = new CustomLock();
 	}
 	
-	/**
-	 * Overridden toString method.
-	 * 
-	 */
 	@Override
 	public String toString() {
 		lock.lockReadOnly();
@@ -32,11 +28,7 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 	
-	/**
-	 * Checks to see if the inverted index has the word.
-	 * 
-	 * @param the word that the user wants to know if the index contains
-	 */
+	@Override
 	public boolean contains(String word) {
 		lock.lockReadOnly();
 		try {
@@ -47,13 +39,7 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 	
-	/**
-	 * Checks to see if the inverted index has the path associated
-	 * with the word.
-	 * 
-	 * @param the word that may have the path
-	 * @param path that the user wants to know if the index contains
-	 */
+	@Override
 	public boolean contains(String word, String path) {
 		lock.lockReadOnly();
 		try {
@@ -64,14 +50,7 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 	
-	/**
-	 * Checks to see if the inverted index has the position associated
-	 * with the word and the path.
-	 * 
-	 * @param the word that may have the path
-	 * @param the path that may have the position
-	 * @param position that the user wants to know if the index contains
-	 */
+	@Override
 	public boolean contains(String word, String path, int position) {
 		lock.lockReadOnly();
 		try {
@@ -82,10 +61,7 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 	
-	/**
-	 * Returns the number of words in the inverted index.
-	 * 
-	 */
+	@Override
 	public int count() {
 		lock.lockReadOnly();
 		try {
@@ -96,11 +72,7 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 	
-	/**
-	 * Returns the number of paths associated with the word.
-	 * 
-	 * @param the word in which the number of paths is returned
-	 */
+	@Override
 	public int count(String word) {
 		lock.lockReadOnly();
 		try {
@@ -111,13 +83,7 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 	
-	/**
-	 * Returns the number of positions for a word and its
-	 * associated path.
-	 * 
-	 * @param the word that has the path
-	 * @param the path in which the number of positions is returned
-	 */
+	@Override
 	public int count(String word, String path) {
 		lock.lockReadOnly();
 		try {
@@ -128,13 +94,18 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 	
-	// TODO Override getLowestIndex
+	@Override
+	public int getLowestIndex(String word, String path) {
+		lock.lockReadOnly();
+		try {
+			return super.getLowestIndex(word, path);
+		}
+		finally {
+			lock.unlockReadOnly();
+		}
+	}
 	
-	/**
-	 * Used to write to the output JSON file.
-	 * 
-	 * @param the output path that will be written to
-	 */
+	@Override
 	public void toJSON(Path path) {
 		lock.lockReadOnly();
 		try {
@@ -145,14 +116,7 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 	
-	/**
-	 * Used to add each word, along with the associated
-	 * path and position, to the InvertedIndex.
-	 * 
-	 * @param the words that will be iterated through
-	 *        and added to the index
-	 * @param the path that contained the words
-	 */
+	@Override
 	public void addAll(String[] words, String path) { 
 		lock.lockReadWrite();
 		try {
@@ -163,20 +127,7 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 	
-	// TODO Remove
-	public ArrayList<SearchResult> search(String[] words, boolean exact) {
-		lock.lockReadOnly();
-		try {
-			return super.search(words, exact);
-		}
-		finally {
-			lock.unlockReadOnly();
-		}
-	}
-	
-	// TODO Use the override annotation, and skip the Javadoc unless something is different
-	
-	
+	@Override
 	public ArrayList<SearchResult> exactSearch(String[] words) {
 		lock.lockReadOnly();
 		try {
@@ -187,6 +138,7 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 	
+	@Override
 	public ArrayList<SearchResult> partialSearch(String[] words) {
 		lock.lockReadOnly();
 		try {

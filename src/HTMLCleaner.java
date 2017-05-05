@@ -1,4 +1,3 @@
-
 /**
  * Cleans simple, validating HTML 4/5 into plain-text words using regular
  * expressions.

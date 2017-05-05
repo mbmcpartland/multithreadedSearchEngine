@@ -142,8 +142,15 @@ public class InvertedIndex {
 		}
 	}
 	
-	// TODO We still need an add() method without causing deadlock
-	/*
+	/**
+	 * Main add function that actually adds the word,
+	 * the associated path, and the associated position
+	 * to the InvertedIndex.
+	 * 
+	 * @param the words that will be iterated through
+	 *        and added to the index
+	 * @param the path that contained the words
+	 */
 	private void addHelper(String word, String path, int position) {
 		if(!this.index.containsKey(word)) {
 			this.index.put(word, new TreeMap<>());
@@ -153,14 +160,17 @@ public class InvertedIndex {
 		}
 		this.index.get(word).get(path).add(position);
 	}
-
-	public void add(String word, String path, int position) {
-		addHelper();
-	}
 	
-	Change addAll to also call addHelper() but NOT add()
-
+	/**
+	 * Used to add a single word, along with the associated
+	 * path and position, to the InvertedIndex.
+	 * 
+	 * @param the word that will be added to the index
+	 * @param the path that contained the words
 	 */
+	public void add(String word, String path, int position) {
+		addHelper(word, path, position);
+	}
 	
 	/**
 	 * Used to add each word, along with the associated
@@ -173,14 +183,7 @@ public class InvertedIndex {
 	public void addAll(String[] words, String path) { 
 		int position = 1;
 		for(String word : words) {
-			if(!this.index.containsKey(word)) {
-				this.index.put(word, new TreeMap<>());
-			}
-			if(!this.index.get(word).containsKey(path)) {
-				this.index.get(word).put(path, new TreeSet<>());
-			}
-			this.index.get(word).get(path).add(position);
-
+			addHelper(word, path, position);
 			position++;
 		}
 	}

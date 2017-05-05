@@ -1,19 +1,27 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-// TODO Javadoc
-
+/**
+ * This class is used to read the input files
+ * and then to build the MultithreadedIndex.
+ * @author mitchellmcpartland
+ */
 public class MultithreadedBuilder {
 	
 	public static final Logger log = LogManager.getLogger();
 	
+	/**
+	 * Iterates through the ArrayList of input files
+	 * and calls queue.execute, passing in the path and
+	 * the index in each iteration.
+	 * 
+	 * @param the ArrayList of htmlFiles to iterate through
+	 * @param the MultithreadedInvertedIndex that is being added to
+	 */
 	public static void buildFromHTML(ArrayList<Path> htmlFiles, MultithreadedInvertedIndex index, int threads) throws IOException {
 		WorkQueue queue = new WorkQueue(threads);
 		
@@ -25,11 +33,21 @@ public class MultithreadedBuilder {
 		queue.shutdown();
 	}
 	
+	/**
+	 * Private BuildWorker class that implements the
+	 * Runnable interface. Each BuildWorker
+	 * simply calls buildFromHTML with the path and
+	 * the MultithreadedInvertedIndex.
+	 */
 	private static class BuildWorker implements Runnable {
 		
 		private MultithreadedInvertedIndex index;
 		private Path path;
 		
+		/**
+		 * Constructor for the BuildWorker,
+		 * or should I say.....minion!
+		 */
 		public BuildWorker(Path path, MultithreadedInvertedIndex index) {
 			this.path = path;
 			this.index = index;
@@ -37,21 +55,10 @@ public class MultithreadedBuilder {
 		
 		@Override
 		public void run() {
-			// TODO InvertedIndexBuilder.buildFromHTML(path, index)
-			
-			synchronized(index) { // TODO Also wouldn't synchronize here because your index is already thread-safe
-				StringBuilder html = new StringBuilder();
-				try(BufferedReader reader = Files.newBufferedReader(this.path, StandardCharsets.UTF_8)) {
-					for(String x = reader.readLine(); x != null ; x = reader.readLine()) {
-						html.append(x);
-						html.append("\n");
-					}
-					String no_html = HTMLCleaner.stripHTML(html.toString());
-					String[] the_words = WordParser.parseWords(no_html);
-					index.addAll(the_words, this.path.toString());
-				} catch (IOException e) {
-					System.out.println("error building index");
-				}
+			 try {
+				InvertedIndexBuilder.buildFromHTML(path, index);
+			} catch (IOException e) {
+				System.out.println("Error building the index from worker thread");
 			}
 		}	
 	}

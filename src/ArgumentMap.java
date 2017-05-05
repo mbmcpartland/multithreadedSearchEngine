@@ -67,7 +67,7 @@ public class ArgumentMap {
 			return false;
 		}
 		arg = arg.trim();
-		return arg.length() > 1 && arg.startsWith("-");
+		return arg.length() >= 1 && arg.startsWith("-");
 	}
 
 	/**

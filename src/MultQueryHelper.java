@@ -10,9 +10,6 @@ import java.util.TreeMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-// TODO Create a QueryHelperInterface with the parseQueries() and toJSON() method
-// TODO implement that interface in both classes
-
 /**
  * Stores a TreeMap that matches queries to an ArrayList
  * of SearchResults. This class reads queries, calls
@@ -21,21 +18,21 @@ import org.apache.logging.log4j.Logger;
  * 
  * @author mitchellmcpartland
  */
-public class MultQueryHelper {
+public class MultQueryHelper implements QueryHelperInterface {
 	
 	public static final Logger log = LogManager.getLogger();
 	
-	private TreeMap<String, ArrayList<SearchResult>> results; // TODO final
+	private final TreeMap<String, ArrayList<SearchResult>> results;
 	private final MultithreadedInvertedIndex index;
+	private final int numThreads;
 	
-	// TODO Pass the # of threads to your constructor
-	// TODO So you can remove it from parseQueries()
 	/**
 	 * Initializes the QueryHelper.
 	 */
-	public MultQueryHelper(MultithreadedInvertedIndex index) {
+	public MultQueryHelper(MultithreadedInvertedIndex index, int threads) {
 		this.results = new TreeMap<>();
 		this.index = index;
+		this.numThreads = threads;
 	}
 	
 	/**
@@ -46,19 +43,15 @@ public class MultQueryHelper {
 	 * @param boolean indicating whether a partial
 	 * 		  or exact search is to be performed
 	 */
-	public void parseQueries(Path path, boolean exact, int threads) throws IOException {
-		WorkQueue queue = new WorkQueue(threads);
+	public void parseQueries(Path path, boolean exact) throws IOException {
+		WorkQueue queue = new WorkQueue(this.numThreads);
 		
 		try(BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
 			for(String line = reader.readLine(); line != null ; line = reader.readLine()) {
-				// TODO Move as much as possible into the worker...
-				// TODO include the if statement
 				String[] words = WordParser.parseWords(line);
 				Arrays.sort(words);
 				line = String.join(" ", words);
-				if(line.length() >= 1) {
-					queue.execute(new SearchWorker(line, this.results, this.index, words, exact));	
-				}
+				queue.execute(new SearchWorker(line, words, exact));	
 			}	
 		}
 		queue.finish();
@@ -73,42 +66,49 @@ public class MultQueryHelper {
 	 */
 	public void toJSON(Path path) {
 		try {
-			// TODO Must be synchronized
-			JSONWriter.writeResults(this.results, path);
+			synchronized(this.results) {
+				JSONWriter.writeResults(this.results, path);
+			}
 		} catch (IOException e) {
 			System.out.println("Unable to write the JSON file to the output path");
 		}
 	}
 	
-	// TODO Remove the static keyword so you can access results and index directly
-	private static class SearchWorker implements Runnable {
+	/**
+	 * Private SearchWorker class that implements the
+	 * Runnable interface. Each SearchWorker
+	 * performs a search for a query.
+	 */
+	private class SearchWorker implements Runnable {
 		private String query;
-		private TreeMap<String, ArrayList<SearchResult>> results;
-		private MultithreadedInvertedIndex index;
 		private String[] words;
 		private boolean exact;
 		
-		public SearchWorker(String query, TreeMap<String, 
-				ArrayList<SearchResult>> results, MultithreadedInvertedIndex index, 
-				String[] words, boolean exact) {
+		/**
+		 * Constructor for the SearchWorker,
+		 * or should I say.....minion!
+		 */
+		public SearchWorker(String query, String[] words, boolean exact) {
 			this.query = query;
-			this.results = results;
-			this.index = index;
 			this.exact = exact;
 			this.words = words;
 		}
 		
-		@Override
+		/**
+		 * Run method that first makes sure that
+		 * the length of the query is longer than
+		 * 0, then it performs a search that is
+		 * NOT synchronized because a search is
+		 * just a read. Then puts the results in
+		 * the SearchResults in the synchronized block.
+		 */
 		public void run() {
-			/* TODO
-			 * List<SearchResult> local = index.search(words, exact);
+			if(this.query.length() >= 1) {
+				ArrayList<SearchResult> local = index.search(words, exact);
 
 				synchronized(results) {
 					results.put(this.query, local);
 				}
-			 */
-			synchronized(results) {
-				results.put(this.query, index.search(words, exact));
 			}
 		}
 	}

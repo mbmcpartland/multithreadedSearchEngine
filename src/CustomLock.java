@@ -1,4 +1,3 @@
-
 /**
  * A simple custom lock that allows simultaneously read operations, but
  * disallows simultaneously write and read/write operations.
@@ -30,7 +29,7 @@ public class CustomLock {
 			try {
 				wait();
 			} catch (InterruptedException e) {
-				e.printStackTrace(); // TODO 
+				System.out.println("Error in acquiring the read lock");
 			}
 		}
 		readers++;
@@ -56,7 +55,7 @@ public class CustomLock {
 			try {
 				wait();
 			} catch (InterruptedException e) {
-				e.printStackTrace();  // TODO 
+				System.out.println("Error in acquiring the read/write lock"); 
 			}
 		}
 		writers++;

@@ -3,11 +3,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-// TODO Merge project 3 into your master branch.
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  * This is my Driver class that does argument-handling
  * and calls all appropriate methods to create the
@@ -16,52 +11,20 @@ import org.apache.logging.log4j.Logger;
  */
 public class Driver { 	
 	
-	public static final Logger log = LogManager.getLogger();
-	
 	/**
 	 * Main method that handles arguments, creates the
 	 * InvertedIndex, and writes to the JSON file.
 	 * @param args
 	 */
 	public static void main(String[] args) throws IOException {
-		/*
-		 * TODO
-		 * 
-		 * ArgumentMap map = ...
-		 * 
-		 * InvertedIndex index = null;
-		 * QueryHelperInterface query = null;
-		 * 
-		 * 
-		 * if (-threads) {
-		 * 		MultithreadedInvertedIndex threaded = new Multi...
-		 * 		index = threaded;
-		 * 		query = new MultithreadedQueryHelper(threaded);
-		 * 
-		 * }
-		 * else {
-		 * 		index = new InvertedIndex();
-		 * 		query = new QueryHelper(index);
-		 * }
-		 * 
-		 * if (-results) {
-		 * 	query.toJSON();
-		 * }
-		 * 
-		 * if (-index) {
-		 * 	index.toJSON();
-		 * }
-		 * 
-		 */
-		
-		
 		ArgumentMap map = new ArgumentMap(args);
-		InvertedIndex index = new InvertedIndex();
-		MultithreadedInvertedIndex multIndex = new MultithreadedInvertedIndex();
-		
+		InvertedIndex index = null;
+		MultithreadedInvertedIndex multIndex = null;
+		QueryHelperInterface query = null;
 		int numThreads = 0;
 		
 		if(map.hasFlag("-threads")) {
+			multIndex = new MultithreadedInvertedIndex();
 			String numTStr = map.getString("-threads");
 			try {
 				numThreads = Integer.parseInt(numTStr);
@@ -72,6 +35,10 @@ public class Driver {
 				System.out.println("Enter a real number greater than 1 please");
 				return;
 			}
+			query = new MultQueryHelper(multIndex, numThreads);
+		} else {
+			index = new InvertedIndex();
+			query = new QueryHelper(index);
 		}
 		
 		if(map.hasFlag("-path")) {
@@ -105,21 +72,13 @@ public class Driver {
 			}
 		}
 		
-		QueryHelper theQueries = null;
-		MultQueryHelper multQueries = null;
-		if(map.hasFlag("-threads")) {
-			multQueries = new MultQueryHelper(multIndex);
-		} else {
-			theQueries = new QueryHelper(index);
-		}
-		
 		if(map.hasFlag("-query")) {
 			if(map.getString("-query") != null) {
 				try {
 					if(map.hasFlag("-threads")) { 
-						multQueries.parseQueries(Paths.get(map.getString("-query")), map.hasFlag("-exact"), numThreads);
+						query.parseQueries(Paths.get(map.getString("-query")), map.hasFlag("-exact"));
 					} else {
-						theQueries.parseQueries(Paths.get(map.getString("-query")), map.hasFlag("-exact"));
+						query.parseQueries(Paths.get(map.getString("-query")), map.hasFlag("-exact"));
 					}
 				} catch (IOException e) {
 					System.out.println("Unable to read the Query file");
@@ -130,9 +89,9 @@ public class Driver {
 		if(map.hasFlag("-results")) {
 			String resultsPath = map.getString("-results", "results.json");
 			if(map.hasFlag("-threads")) { 
-				multQueries.toJSON(Paths.get(resultsPath));
+				query.toJSON(Paths.get(resultsPath));
 			} else {
-				theQueries.toJSON(Paths.get(resultsPath));
+				query.toJSON(Paths.get(resultsPath));
 			}
 		}
 	}

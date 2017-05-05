@@ -15,7 +15,7 @@ import java.util.TreeMap;
  * 
  * @author mitchellmcpartland
  */
-public class QueryHelper {
+public class QueryHelper implements QueryHelperInterface {
 	
 	private final TreeMap<String, ArrayList<SearchResult>> results;
 	private final InvertedIndex index;

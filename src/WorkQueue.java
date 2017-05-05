@@ -88,30 +88,32 @@ public class WorkQueue {
 				}
 			}
 			catch (InterruptedException e) {
-				// TODO Thread.currentThread().interrupt();
+				 Thread.currentThread().interrupt();
 			}
 		}
 	}
 	
-	// TODO Javadoc
-	
+	/**
+	 * Returns the current pending value
+	 */
 	private int getPending() {
 		synchronized(queue) {
 			return this.pending;
 		}
 	}
 	
+	/**
+	 * Increments the pending variable.
+	 */
 	private void incrementPending() {
 		synchronized(queue) {
 			pending++;
-			
-			// TODO Remove
-			if(getPending() <= 0) {
-				queue.notifyAll();
-			}
 		}
 	}
 	
+	/**
+	 * Decrements the pending variable.
+	 */
 	private void decrementPending() {
 		synchronized(queue) {
 			pending--;
@@ -189,5 +191,4 @@ public class WorkQueue {
 			}
 		}
 	}
-	
 }
