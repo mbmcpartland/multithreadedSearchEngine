@@ -10,6 +10,8 @@ import java.util.TreeMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+// TODO Refactor Multithreaded, Threaded, etc.
+
 /**
  * Stores a TreeMap that matches queries to an ArrayList
  * of SearchResults. This class reads queries, calls
@@ -48,6 +50,7 @@ public class MultQueryHelper implements QueryHelperInterface {
 		
 		try(BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
 			for(String line = reader.readLine(); line != null ; line = reader.readLine()) {
+				// TODO Move the parse, sort, and join into the run() of your SearchWorker
 				String[] words = WordParser.parseWords(line);
 				Arrays.sort(words);
 				line = String.join(" ", words);

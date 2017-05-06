@@ -9,14 +9,14 @@ import java.util.ArrayList;
  * inverted index and write to the JSON file.
  * @author mitchellmcpartland
  */
-public class Driver { 	
+public class Driver {
 	
 	/**
 	 * Main method that handles arguments, creates the
 	 * InvertedIndex, and writes to the JSON file.
 	 * @param args
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException { // TODO Remove throws IOException 
 		ArgumentMap map = new ArgumentMap(args);
 		InvertedIndex index = null;
 		MultithreadedInvertedIndex multIndex = null;
@@ -25,6 +25,8 @@ public class Driver {
 		
 		if(map.hasFlag("-threads")) {
 			multIndex = new MultithreadedInvertedIndex();
+			// TODO index = multIndex;
+			
 			String numTStr = map.getString("-threads");
 			try {
 				numThreads = Integer.parseInt(numTStr);
@@ -53,7 +55,7 @@ public class Driver {
 			ArrayList<Path> htmlFiles = new ArrayList<Path>();
 			DirectoryTraverser.getFileNames(htmlFiles, inputPath);
 			
-			if(!(map.hasFlag("-threads"))) {
+			if(!(map.hasFlag("-threads"))) { // TODO Test if multIndex != null;
 				try {
 					InvertedIndexBuilder.buildFromHTML(htmlFiles, index);
 				} catch (IOException e) {
@@ -68,13 +70,14 @@ public class Driver {
 			if(map.hasFlag("-threads")) {
 				multIndex.toJSON(Paths.get(map.getString("-index", "index.json")));
 			} else {
-				index.toJSON(Paths.get(map.getString("-index", "index.json")));
+				index.toJSON(Paths.get(map.getString("-index", "index.json"))); // TODO Keep this, remove the rest
 			}
 		}
 		
 		if(map.hasFlag("-query")) {
 			if(map.getString("-query") != null) {
 				try {
+					// TODO Do not need the if/else anymore, they are doing the same thing!
 					if(map.hasFlag("-threads")) { 
 						query.parseQueries(Paths.get(map.getString("-query")), map.hasFlag("-exact"));
 					} else {
@@ -88,10 +91,10 @@ public class Driver {
 		
 		if(map.hasFlag("-results")) {
 			String resultsPath = map.getString("-results", "results.json");
-			if(map.hasFlag("-threads")) { 
-				query.toJSON(Paths.get(resultsPath));
-			} else {
-				query.toJSON(Paths.get(resultsPath));
+			if(map.hasFlag("-threads")) {  // TODO Remove
+				query.toJSON(Paths.get(resultsPath)); // TODO Remove
+			} else { // TODO Remove
+				query.toJSON(Paths.get(resultsPath)); // TODO Keep
 			}
 		}
 	}

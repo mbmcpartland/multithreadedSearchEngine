@@ -172,6 +172,21 @@ public class InvertedIndex {
 		addHelper(word, path, position);
 	}
 	
+	/* TODO Create this, override it in your thread-safe version
+	public void addAll(InvertedIndex other) {
+		for (String word : other.index.keySet()) {
+			if (this.index.containsKey(word) == false) {
+				this.index.put(word, other.index.get(word));
+			}
+			else {
+				for every path in other
+					if path does not exist in this.index, put
+					else get the position set of this.index, addAll() the other position set
+			}
+		}
+	}
+	*/
+	
 	/**
 	 * Used to add each word, along with the associated
 	 * path and position, to the InvertedIndex.

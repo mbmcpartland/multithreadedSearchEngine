@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.nio.file.Path;
 
+// TODO Javadoc here, @Override and skip the Javadoc in your other classes
 
 public interface QueryHelperInterface {
 	
