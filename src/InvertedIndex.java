@@ -29,7 +29,7 @@ public class InvertedIndex {
 	 */
 	@Override
 	public String toString() {
-		return this.toString(); // TODO this.index.toString();
+		return this.index.toString();
 	}
 	
 	/**
@@ -172,20 +172,28 @@ public class InvertedIndex {
 		addHelper(word, path, position);
 	}
 	
-	/* TODO Create this, override it in your thread-safe version
+	/**
+	 * Used to combine another InvertedIndex into the
+	 * current InvertedIndex (this.index).
+	 * 
+	 * @param the other InvertedIndex
+	 */
 	public void addAll(InvertedIndex other) {
-		for (String word : other.index.keySet()) {
-			if (this.index.containsKey(word) == false) {
+		for(String word : other.index.keySet()) {
+			if(this.index.containsKey(word) == false) {
 				this.index.put(word, other.index.get(word));
-			}
-			else {
-				for every path in other
-					if path does not exist in this.index, put
-					else get the position set of this.index, addAll() the other position set
+			} else {
+				for(String path : other.index.get(word).keySet()) {
+					if(this.contains(word, path) == false) {
+						this.index.get(word).put(path, other.index.get(word).get(path));
+					} else {
+						this.index.get(word).get(path).addAll(other.index.get(word).get(path));
+					}
+				}
 			}
 		}
 	}
-	*/
+
 	
 	/**
 	 * Used to add each word, along with the associated

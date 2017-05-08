@@ -16,7 +16,7 @@ public class Driver {
 	 * InvertedIndex, and writes to the JSON file.
 	 * @param args
 	 */
-	public static void main(String[] args) throws IOException { // TODO Remove throws IOException 
+	public static void main(String[] args) { 
 		ArgumentMap map = new ArgumentMap(args);
 		InvertedIndex index = null;
 		MultithreadedInvertedIndex multIndex = null;
@@ -25,7 +25,7 @@ public class Driver {
 		
 		if(map.hasFlag("-threads")) {
 			multIndex = new MultithreadedInvertedIndex();
-			// TODO index = multIndex;
+			index = multIndex;
 			
 			String numTStr = map.getString("-threads");
 			try {
@@ -37,7 +37,7 @@ public class Driver {
 				System.out.println("Enter a real number greater than 1 please");
 				return;
 			}
-			query = new MultQueryHelper(multIndex, numThreads);
+			query = new ThreadedQueryHelper(multIndex, numThreads);
 		} else {
 			index = new InvertedIndex();
 			query = new QueryHelper(index);
@@ -54,35 +54,29 @@ public class Driver {
 			Path inputPath = Paths.get(path);
 			ArrayList<Path> htmlFiles = new ArrayList<Path>();
 			DirectoryTraverser.getFileNames(htmlFiles, inputPath);
-			
-			if(!(map.hasFlag("-threads"))) { // TODO Test if multIndex != null;
+			if(multIndex == null) {
 				try {
 					InvertedIndexBuilder.buildFromHTML(htmlFiles, index);
 				} catch (IOException e) {
 					System.out.println("Unable to build the index from the provided path");
 				}
 			} else {
-				MultithreadedBuilder.buildFromHTML(htmlFiles, multIndex, numThreads);
+				try {
+					MultithreadedBuilder.buildFromHTML(htmlFiles, multIndex, numThreads);
+				} catch (IOException e) {
+					System.out.println("Unable to build the index from the provided path");
+				}
 			}
 		}
 		
 		if(map.hasFlag("-index")) {
-			if(map.hasFlag("-threads")) {
-				multIndex.toJSON(Paths.get(map.getString("-index", "index.json")));
-			} else {
-				index.toJSON(Paths.get(map.getString("-index", "index.json"))); // TODO Keep this, remove the rest
-			}
+			index.toJSON(Paths.get(map.getString("-index", "index.json")));
 		}
 		
 		if(map.hasFlag("-query")) {
 			if(map.getString("-query") != null) {
 				try {
-					// TODO Do not need the if/else anymore, they are doing the same thing!
-					if(map.hasFlag("-threads")) { 
-						query.parseQueries(Paths.get(map.getString("-query")), map.hasFlag("-exact"));
-					} else {
-						query.parseQueries(Paths.get(map.getString("-query")), map.hasFlag("-exact"));
-					}
+					query.parseQueries(Paths.get(map.getString("-query")), map.hasFlag("-exact"));
 				} catch (IOException e) {
 					System.out.println("Unable to read the Query file");
 				}
@@ -90,12 +84,7 @@ public class Driver {
 		}
 		
 		if(map.hasFlag("-results")) {
-			String resultsPath = map.getString("-results", "results.json");
-			if(map.hasFlag("-threads")) {  // TODO Remove
-				query.toJSON(Paths.get(resultsPath)); // TODO Remove
-			} else { // TODO Remove
-				query.toJSON(Paths.get(resultsPath)); // TODO Keep
-			}
+			query.toJSON(Paths.get(map.getString("-results", "results.json")));
 		}
 	}
 }

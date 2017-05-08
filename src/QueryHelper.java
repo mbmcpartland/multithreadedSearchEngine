@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeMap;
 
-// TODO @Override
-
 /**
  * Stores a TreeMap that matches queries to an ArrayList
  * of SearchResults. This class reads queries, calls
@@ -30,14 +28,7 @@ public class QueryHelper implements QueryHelperInterface {
 		this.index = index;
 	}
 	
-	/**
-	 * Reads the query file and then calls the appropriate
-	 * search method in my InvertedIndex class.
-	 * 
-	 * @param the path that contains the queries
-	 * @param boolean indicating whether a partial
-	 * 		  or exact search is to be performed
-	 */
+	@Override
 	public void parseQueries(Path path, boolean exact) throws IOException {
 		try(BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
 			for(String line = reader.readLine(); line != null ; line = reader.readLine()) {
@@ -52,12 +43,7 @@ public class QueryHelper implements QueryHelperInterface {
 		}
 	}
 	
-	/**
-	 * Outputs the search results to the provided
-	 * output Path. 
-	 * 
-	 * @param the path that will be output to
-	 */
+	@Override
 	public void toJSON(Path path) {
 		try {
 			JSONWriter.writeResults(this.results, path);

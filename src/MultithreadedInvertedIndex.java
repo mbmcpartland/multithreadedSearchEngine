@@ -127,7 +127,27 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 	
-	// TODO @Override and lock add(...)
+	@Override
+	public void addAll(InvertedIndex other) { 
+		lock.lockReadWrite();
+		try {
+			super.addAll(other);
+		}
+		finally {
+			lock.unlockReadWrite();
+		}
+	}
+	
+	@Override
+	public void add(String word, String path, int position) {
+		lock.lockReadWrite();
+		try {
+			super.add(word, path, position);
+		}
+		finally {
+			lock.unlockReadWrite();
+		}
+	}
 	
 	@Override
 	public ArrayList<SearchResult> exactSearch(String[] words) {

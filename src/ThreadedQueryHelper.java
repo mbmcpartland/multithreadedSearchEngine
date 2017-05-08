@@ -10,8 +10,6 @@ import java.util.TreeMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-// TODO Refactor Multithreaded, Threaded, etc.
-
 /**
  * Stores a TreeMap that matches queries to an ArrayList
  * of SearchResults. This class reads queries, calls
@@ -20,7 +18,7 @@ import org.apache.logging.log4j.Logger;
  * 
  * @author mitchellmcpartland
  */
-public class MultQueryHelper implements QueryHelperInterface {
+public class ThreadedQueryHelper implements QueryHelperInterface {
 	
 	public static final Logger log = LogManager.getLogger();
 	
@@ -31,42 +29,26 @@ public class MultQueryHelper implements QueryHelperInterface {
 	/**
 	 * Initializes the QueryHelper.
 	 */
-	public MultQueryHelper(MultithreadedInvertedIndex index, int threads) {
+	public ThreadedQueryHelper(MultithreadedInvertedIndex index, int threads) {
 		this.results = new TreeMap<>();
 		this.index = index;
 		this.numThreads = threads;
 	}
 	
-	/**
-	 * Reads the query file and then calls the appropriate
-	 * search method in my InvertedIndex class.
-	 * 
-	 * @param the path that contains the queries
-	 * @param boolean indicating whether a partial
-	 * 		  or exact search is to be performed
-	 */
+	@Override
 	public void parseQueries(Path path, boolean exact) throws IOException {
 		WorkQueue queue = new WorkQueue(this.numThreads);
 		
 		try(BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
 			for(String line = reader.readLine(); line != null ; line = reader.readLine()) {
-				// TODO Move the parse, sort, and join into the run() of your SearchWorker
-				String[] words = WordParser.parseWords(line);
-				Arrays.sort(words);
-				line = String.join(" ", words);
-				queue.execute(new SearchWorker(line, words, exact));	
+				queue.execute(new SearchWorker(line, exact));	
 			}	
 		}
 		queue.finish();
 		queue.shutdown();
 	}
 	
-	/**
-	 * Outputs the search results to the provided
-	 * output Path. 
-	 * 
-	 * @param the path that will be output to
-	 */
+	@Override
 	public void toJSON(Path path) {
 		try {
 			synchronized(this.results) {
@@ -84,17 +66,15 @@ public class MultQueryHelper implements QueryHelperInterface {
 	 */
 	private class SearchWorker implements Runnable {
 		private String query;
-		private String[] words;
 		private boolean exact;
 		
 		/**
 		 * Constructor for the SearchWorker,
 		 * or should I say.....minion!
 		 */
-		public SearchWorker(String query, String[] words, boolean exact) {
+		public SearchWorker(String query, boolean exact) {
 			this.query = query;
 			this.exact = exact;
-			this.words = words;
 		}
 		
 		/**
@@ -106,6 +86,10 @@ public class MultQueryHelper implements QueryHelperInterface {
 		 * the SearchResults in the synchronized block.
 		 */
 		public void run() {
+			String[] words = WordParser.parseWords(this.query);
+			Arrays.sort(words);
+			this.query = String.join(" ", words);
+			
 			if(this.query.length() >= 1) {
 				ArrayList<SearchResult> local = index.search(words, exact);
 
