@@ -56,10 +56,9 @@ public class MultithreadedBuilder {
 		@Override
 		public void run() {
 			 try {
-				 InvertedIndexBuilder.buildFromHTML(path, index);
-//				InvertedIndex local = new InvertedIndex();
-//				InvertedIndexBuilder.buildFromHTML(path, local);
-//				this.index.addAll(local);
+				InvertedIndex local = new InvertedIndex();
+				InvertedIndexBuilder.buildFromHTML(this.path, local);
+				this.index.addAll(local);
 			} catch (IOException e) {
 				System.out.println("Error building the index from worker thread");
 			}
