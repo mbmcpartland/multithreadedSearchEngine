@@ -127,6 +127,8 @@ public class MultithreadedInvertedIndex extends InvertedIndex {
 		}
 	}
 	
+	// TODO @Override and lock add(...)
+	
 	@Override
 	public ArrayList<SearchResult> exactSearch(String[] words) {
 		lock.lockReadOnly();
