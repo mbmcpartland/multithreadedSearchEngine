@@ -184,7 +184,6 @@ public class InvertedIndex {
 				this.index.put(word, other.index.get(word));
 			} else {
 				for(String path : other.index.get(word).keySet()) {
-					this.index.get(word).containsKey(path);
 					if(this.index.get(word).containsKey(path) == false) {
 						this.index.get(word).put(path, other.index.get(word).get(path));
 					} else {

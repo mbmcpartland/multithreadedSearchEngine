@@ -1,8 +1,5 @@
 import java.util.LinkedList;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  * A simple work queue implementation based on the IBM developerWorks article by
  * Brian Goetz. It is up to the user of this class to keep track of whether
@@ -13,9 +10,7 @@ import org.apache.logging.log4j.Logger;
  *      Theory and Practice: Thread Pools and Work Queues</a>
  */
 public class WorkQueue {
-
 	
-	public static final Logger log = LogManager.getLogger();
 	/**
 	 * Pool of worker threads that will wait in the background until work is
 	 * available.

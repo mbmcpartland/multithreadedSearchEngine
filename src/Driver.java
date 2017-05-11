@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -22,6 +24,37 @@ public class Driver {
 		MultithreadedInvertedIndex multIndex = null;
 		QueryHelperInterface query = null;
 		int numThreads = 0;
+		int urlLimit = 0;
+		
+		if(map.hasFlag("-url")) {
+			multIndex = new MultithreadedInvertedIndex();
+			index = multIndex;
+			if(map.hasFlag("-limit")) {
+				String urlLimitStr = map.getString("-limit");
+				if(urlLimitStr != null) {
+					try {
+						urlLimit = Integer.parseInt(urlLimitStr);
+						if(urlLimit <= 0) {
+							return;
+						}
+					} catch (NumberFormatException e) {
+						System.out.println("Enter a real number greater than 1 please");
+						return;
+					}
+				} else {
+					urlLimit = 50;
+				}
+				WebCrawler crawler = new WebCrawler(multIndex, urlLimit);
+				if((map.getString("-url") != null)) {
+					try {
+						crawler.crawl(new URL(map.getString("-url")), urlLimit);
+					} catch (MalformedURLException e) {
+					}
+				} else {
+					return;
+				}
+			}
+		}
 		
 		if(map.hasFlag("-threads")) {
 			multIndex = new MultithreadedInvertedIndex();
@@ -70,12 +103,18 @@ public class Driver {
 		}
 		
 		if(map.hasFlag("-index")) {
+			if(map.hasFlag("-url")) {
+				index = multIndex;
+			}
 			index.toJSON(Paths.get(map.getString("-index", "index.json")));
 		}
 		
 		if(map.hasFlag("-query")) {
 			if(map.getString("-query") != null) {
 				try {
+					if(map.hasFlag("-url")) {
+						query = new ThreadedQueryHelper(multIndex, urlLimit);
+					}
 					query.parseQueries(Paths.get(map.getString("-query")), map.hasFlag("-exact"));
 				} catch (IOException e) {
 					System.out.println("Unable to read the Query file");

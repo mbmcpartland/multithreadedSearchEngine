@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  * Stores a TreeMap that matches queries to an ArrayList
  * of SearchResults. This class reads queries, calls
@@ -19,8 +16,6 @@ import org.apache.logging.log4j.Logger;
  * @author mitchellmcpartland
  */
 public class ThreadedQueryHelper implements QueryHelperInterface {
-	
-	public static final Logger log = LogManager.getLogger();
 	
 	private final TreeMap<String, ArrayList<SearchResult>> results;
 	private final MultithreadedInvertedIndex index;

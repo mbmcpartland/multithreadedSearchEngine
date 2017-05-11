@@ -12,8 +12,6 @@ import org.apache.logging.log4j.Logger;
  */
 public class MultithreadedBuilder {
 	
-	public static final Logger log = LogManager.getLogger();
-	
 	/**
 	 * Iterates through the ArrayList of input files
 	 * and calls queue.execute, passing in the path and

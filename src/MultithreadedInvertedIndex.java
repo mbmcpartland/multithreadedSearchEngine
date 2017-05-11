@@ -1,12 +1,8 @@
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class MultithreadedInvertedIndex extends InvertedIndex {
 	
-	public static final Logger log = LogManager.getLogger();
 	private final CustomLock lock;
 	
 	/**
