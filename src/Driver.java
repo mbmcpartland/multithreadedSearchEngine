@@ -25,6 +25,8 @@ public class Driver {
 		QueryHelperInterface query = null;
 		int numThreads = 0;
 		int urlLimit = 0;
+		int portNum = 8080;
+		WebCrawler crawler = null;
 		
 		if(map.hasFlag("-url")) {
 			multIndex = new MultithreadedInvertedIndex();
@@ -44,7 +46,7 @@ public class Driver {
 				} else {
 					urlLimit = 50;
 				}
-				WebCrawler crawler = new WebCrawler(multIndex, urlLimit);
+				crawler = new WebCrawler(multIndex, urlLimit);
 				if((map.getString("-url") != null)) {
 					try {
 						crawler.crawl(new URL(map.getString("-url")), urlLimit);
@@ -124,6 +126,24 @@ public class Driver {
 		
 		if(map.hasFlag("-results")) {
 			query.toJSON(Paths.get(map.getString("-results", "results.json")));
+		}
+		
+		if(map.hasFlag("-port")) {
+			String portStr = map.getString("-port");
+			if(portStr != null) {
+				try {
+					portNum = Integer.parseInt(portStr);
+				} catch (NumberFormatException e) {
+					System.out.println("Enter a real number greater than 1 please");
+					return;
+				}
+			}
+			SearchServer server = new SearchServer(portNum, multIndex, crawler);
+			try {
+				server.runServer();
+			} catch (Exception e) {
+
+			}
 		}
 	}
 }

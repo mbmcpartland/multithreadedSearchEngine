@@ -16,7 +16,7 @@ public class WebCrawler {
 	private MultithreadedInvertedIndex index;
 	private WorkQueue queue;
 	private ArrayList<URL> urls;
-	private final int limit;
+	private int limit;
 	
 	/**
 	 * Constructor for the WebCrawler
@@ -36,6 +36,17 @@ public class WebCrawler {
 	 * @param limit on the number of threads building the index
 	 */
 	public void crawl(URL url, int limit) {
+		urls.add(url);
+		queue.execute(new CrawlWorker(url.toString()));
+
+		queue.finish();
+		queue.shutdown();
+	}
+	
+	public void newCrawl(URL url, int limit) {
+		this.limit = limit;
+		this.urls = new ArrayList<URL>();
+		this.queue = new WorkQueue(limit);
 		urls.add(url);
 		queue.execute(new CrawlWorker(url.toString()));
 

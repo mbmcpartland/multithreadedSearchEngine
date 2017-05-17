@@ -5,7 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 /**
  * Stores a TreeMap that matches queries to an ArrayList
@@ -41,6 +43,30 @@ public class ThreadedQueryHelper implements QueryHelperInterface {
 		}
 		queue.finish();
 		queue.shutdown();
+	}
+	
+	public void searchOneQuery(String query, boolean exact) throws IOException {
+		String[] words = WordParser.parseWords(query);
+		Arrays.sort(words);
+		query = String.join(" ", words);
+		
+		if(query.length() >= 1) {
+			ArrayList<SearchResult> local = index.search(words, exact);
+			results.put(query, local);
+		}
+	}
+	
+	public ArrayList<String> returnLinks() {
+		ArrayList<String> links = new ArrayList<String>();
+		Iterator<Entry<String, ArrayList<SearchResult>>> iterator = this.results.entrySet().iterator();
+		while(iterator.hasNext()) {
+			Entry<String, ArrayList<SearchResult>> entry = iterator.next();
+			ArrayList<SearchResult> resultObjects = entry.getValue();
+			for(SearchResult obj : resultObjects) {
+				links.add(obj.getPath());
+			}
+		}
+		return links;
 	}
 	
 	@Override
