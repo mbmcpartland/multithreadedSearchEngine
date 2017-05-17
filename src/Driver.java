@@ -51,6 +51,7 @@ public class Driver {
 					try {
 						crawler.crawl(new URL(map.getString("-url")), urlLimit);
 					} catch (MalformedURLException e) {
+						e.printStackTrace();
 					}
 				} else {
 					return;
@@ -142,7 +143,7 @@ public class Driver {
 			try {
 				server.runServer();
 			} catch (Exception e) {
-
+				e.printStackTrace();
 			}
 		}
 	}

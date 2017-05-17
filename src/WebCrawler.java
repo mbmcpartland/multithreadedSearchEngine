@@ -15,7 +15,7 @@ public class WebCrawler {
 	
 	private MultithreadedInvertedIndex index;
 	private WorkQueue queue;
-	private ArrayList<URL> urls;
+	private ArrayList<URL> urls; // TODO urls.contains() is very slow on an array list, hashset 
 	private int limit;
 	
 	/**
